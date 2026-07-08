@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form 26AS – Customer Master</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root {
+    --navy: #0f1e3d;
+    --navy-mid: #162850;
+    --navy-light: #1e3668;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --accent-text: #1d4ed8;
+    --border: #e2e8f0;
+    --surface: #f8fafc;
+    --text-main: #0f172a;
+    --text-muted: #c3cbd7;
+    --text-hint: #94a3b8;
+    --success: #16a34a;
+    --success-bg: #dcfce7;
+    --warning: #b45309;
+    --warning-bg: #fef3c7;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --sidebar-w: 220px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: var(--sans); font-size: 14px; color: var(--text-main); background: var(--surface); }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--navy);
+    height: 100vh;
+    position: fixed;
+    top: 0; left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .sidebar-brand {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .sidebar-brand .brand-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: rgba(247, 235, 235, 0.962);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .sidebar-brand .brand-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.7;
+  }
+  .sidebar-brand .brand-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 2px;
+  }
+  .nav-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.99);
+    text-transform: uppercase;
+    padding: 16px 18px 6px;
+  }
+  .sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.58);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-nav a i { font-size: 15px; flex-shrink: 0; }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); }
+  .sidebar-nav a.active {
+    background: rgba(37,99,235,0.18);
+    color: #93c5fd;
+    border-left-color: #3b82f6;
+    font-weight: 500;
+  }
+  .sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding: 14px 18px;
+  }
+  .user-pill { display: flex; align-items: center; gap: 10px; }
+  .user-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--navy-light);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: #93c5fd;
+    flex-shrink: 0;
+  }
+  .user-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
+  .user-role { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+  /* ── Main Layout ── */
+  .main-wrap {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .breadcrumb-wrap { display: flex; align-items: center; gap: 6px; }
+  .breadcrumb-wrap span { font-size: 12px; color:rgb(230, 10, 10); font-weight: 500; }
+  .breadcrumb-wrap .bc-sep { color: var(--text-hint); }
+  .breadcrumb-wrap .bc-current { font-weight: 500; color: var(--text-main); }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .btn-topbar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-main);
+    transition: background 0.14s;
+  }
+  .btn-topbar:hover { background: var(--surface); }
+  .btn-topbar.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-topbar.primary:hover { background: #1d4ed8; }
+
+  /* ── Page Content ── */
+  .page-content { padding: 24px 28px 40px; flex: 1; }
+  .page-header { margin-bottom: 20px; }
+  .page-title { font-size: 18px; font-weight: 600; color: var(--text-main); }
+  .page-subtitle { font-size: 12px; color: black; margin-top: 2px; }
+
+  /* ── Metric Cards ── */
+  .metric-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .metric-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .metric-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+    -webkit-text-stroke: 0.75px currentColor;
+  }
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .metric-delta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .delta-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 11px;
+  }
+  .metric-card.m-blue::before { background: #3b82f6; }
+  .metric-card.m-blue .metric-label { color: #3b82f6; }
+  .metric-card.m-blue .metric-icon { color: #3b82f6; }
+  .metric-card.m-blue .delta-badge.up { background: #eff6ff; color: #1d4ed8; }
+  .metric-card.m-green::before { background: #22c55e; }
+  .metric-card.m-green .metric-label { color: #22c55e; }
+  .metric-card.m-green .metric-icon { color: #22c55e; }
+  .metric-card.m-green .delta-badge.up { background: #f0fdf4; color: #15803d; }
+  .metric-card.m-amber::before { background: #f59e0b; }
+  .metric-card.m-amber .metric-label { color: #f59e0b; }
+  .metric-card.m-amber .metric-icon { color: #f59e0b; }
+  .metric-card.m-amber .delta-badge.warn { background: #fffbeb; color: #b45309; }
+
+  /* ── Search Bar ── */
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .search-wrap { position: relative; flex: 1; }
+  .search-wrap i {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-hint);
+    font-size: 14px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text-main);
+    outline: none;
+    font-family: var(--sans);
+  }
+  .search-input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text-main);
+    font-family: var(--sans);
+    cursor: pointer;
+    outline: none;
+  }
+  .filter-select:focus { border-color: #93c5fd; }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+    padding: 0 16px;
+  }
+  .tab-btn {
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 400;
+    color: black;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.14s, border-color 0.14s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn .tab-count {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--text-hint);
+  }
+  .tab-btn.active { color: var(--accent-text); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab-btn.active .tab-count { background: var(--accent-soft); border-color: #bfdbfe; color: var(--accent-text); }
+  .tab-btn:hover:not(.active) { color: var(--text-main); }
+
+  /* ── Card wrapper ── */
+  .card-panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-panel-body { padding: 16px; }
+
+  /* ── Table ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table thead th {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    padding: 9px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  .data-table thead th:hover { color: var(--text-main); }
+  .data-table thead th .sort-icon { margin-left: 4px; opacity: 0.4; font-size: 10px; }
+  .data-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: #f8fafc; }
+  .data-table tbody tr.selected { background: #eff6ff; }
+  .data-table td { padding: 10px 14px; color: black; vertical-align: middle; }
+  .data-table td.mono-cell { font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em; color: black; }
+  .data-table td.muted-cell { color: black; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .status-badge.active   { background: var(--success-bg); color: var(--success); }
+  .status-badge.inactive { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+  .status-badge i { font-size: 9px; }
+
+  .customer-cell { display: flex; align-items: center; gap: 10px; }
+  .cust-avatar {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .av-blue   { background: #dbeafe; color: #1d4ed8; }
+  .av-teal   { background: #ccfbf1; color: #0f766e; }
+  .av-purple { background: #ede9fe; color: #7c3aed; }
+  .av-amber  { background: #fef3c7; color: #b45309; }
+  .av-pink   { background: #fce7f3; color: #be185d; }
+  .av-green  { background: #dcfce7; color: #15803d; }
+
+  .cust-name { font-weight: 500; font-size: 13px; }
+  .cust-code { font-family: var(--mono); font-size: 10px; color: var(--text-hint); margin-top: 1px; }
+
+  /* ── Detail Panel ── */
+  .detail-panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .detail-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .detail-title   { font-size: 14px; font-weight: 600; }
+  .detail-subtitle { font-size: 11px; color: black; margin-top: 1px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .info-row {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .info-row:nth-child(even)      { border-right: none; }
+  .info-row:nth-last-child(-n+2) { border-bottom: none; }
+  .info-label {
+    font-size: 10px; font-weight: 600;
+    color: var(--text-hint);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 4px;
+  }
+  .info-value { font-size: 13px; color: var(--text-main); font-weight: 400; }
+  .info-value.mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; }
+
+  /* ── TDS Section ── */
+  .tds-section { padding: 16px; }
+  .tds-section-title {
+    font-size: 11px; font-weight: 600;
+    color: black;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tds-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Pagination ── */
+  .pagination-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .page-info { font-size: 12px; color: rgb(46, 43, 43); }
+  .page-info span { font-family: var(--mono); }
+  .page-btns { display: flex; gap: 4px; }
+  .page-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    color: black;
+    transition: background 0.1s, color 0.1s;
+  }
+  .page-btn:hover { background: var(--surface); color: var(--text-main); }
+  .page-btn.current { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+
+  /* ── Upload History ── */
+  .upload-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .upload-item:last-child { border-bottom: none; }
+  .upload-icon-wrap {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .upload-icon-wrap.pdf  { background: #fee2e2; color: #dc2626; }
+  .upload-icon-wrap.xlsx { background: #dcfce7; color: #16a34a; }
+  .upload-icon-wrap.txt  { background: #dbeafe; color: #2563eb; }
+  .upload-meta { flex: 1; min-width: 0; }
+  .upload-filename { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upload-details { font-size: 11px; color: black; margin-top: 2px; font-family: var(--mono); }
+  .upload-status { text-align: right; }
+
+  /* ── Tab content ── */
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  
+
+  /* ── Split layout ── */
+  .split-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-hint); }
+  .empty-state i { font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.4; }
+  .empty-state p { font-size: 13px; }
+
+  .fy-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--navy-light);
+    color: #a5b2c1;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 1100px) {
+    .split-layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-tag">Form 26AS Utility</div>
+        <div class="brand-name">Reconciliation</div>
+        <div class="brand-sub">v1.0 · Internal</div>
+    </div>
+    
+    <div class="nav-section-label">Masters</div>
+    <div class="sidebar-nav">
+        <!-- Points to the root index path -->
+        <a href="/" class="active"><i class="bi bi-people"></i> Customer Master</a>
+        <!-- Points to /form26as route -->
+        <a href="/form26as"><i class="bi bi-file-earmark-text"></i> Form 26AS</a>
+    </div>
+    
+    <div class="nav-section-label">Operations</div>
+    <div class="sidebar-nav">
+        <!-- Points to /books-of-accounts route -->
+        <a href="/books-of-accounts"><i class="bi bi-journals"></i> Books of Accounts</a>
+        <!-- Points to /upload-utility route -->
+        <a href="/upload-utility"><i class="bi bi-upload"></i> Upload Utility</a>
+        <!-- Points to /reconciliation route -->
+        <a href="/reconciliation"><i class="bi bi-arrow-left-right"></i> Reconciliation</a>
+    </div>
+    
+    <div class="nav-section-label">Reports</div>
+    <div class="sidebar-nav">
+        <a href="/tds-summary"><i class="bi bi-file-earmark-bar-graph"></i> TDS Summary</a>
+        <a href="/audit-trail"><i class="bi bi-clipboard-data"></i> Audit Trail</a>
+    </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar">SR</div>
+      <div>
+        <div class="user-name">Sanjana Ravishankar</div>
+        <div class="user-role">Tax Analyst</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+
+<!-- ════════════ MAIN ════════════ -->
+<div class="main-wrap">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="breadcrumb-wrap">
+      <span>Masters</span>
+      <span class="bc-sep"><i class="bi bi-chevron-right" style="font-size:10px"></i></span>
+      <span class="bc-current">Customer Master</span>
+    </div>
+    <div class="topbar-actions"></div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <div class="page-header">
+      <div class="page-title">Customer Master</div>
+      <div class="page-subtitle">Manage customer profiles, PAN, GSTIN, and TAN mappings for Form 26AS reconciliation.</div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="metric-row">
+      <div class="metric-card m-blue">
+        <div class="metric-label">Total Customers</div>
+        <div class="metric-value" id="metricTotal">—</div>
+        <div class="metric-delta">
+          <span class="delta-badge up" id="deltaTotal">+0</span>
+          <span>since last quarter</span>
+        </div>
+        <i class="bi bi-people metric-icon"></i>
+      </div>
+      <div class="metric-card m-green">
+        <div class="metric-label">Active Customers</div>
+        <div class="metric-value" id="metricActive">—</div>
+        <div class="metric-delta">
+          <span class="delta-badge up" id="deltaActive">0%</span>
+          <span>of total</span>
+        </div>
+        <i class="bi bi-person-check metric-icon"></i>
+      </div>
+      <div class="metric-card m-amber">
+        <div class="metric-label">Total TANs</div>
+        <div class="metric-value" id="metricTans">—</div>
+        <div class="metric-delta">
+          <span class="delta-badge warn" id="deltaTans">0 unlinked</span>
+          <span>require mapping</span>
+        </div>
+        <i class="bi bi-upc-scan metric-icon"></i>
+      </div>
+    </div>
+
+    <!-- Split Layout -->
+    <div class="split-layout">
+
+      <!-- Left: Customer Table -->
+      <div>
+        <div class="card-panel">
+          <div class="tab-bar" id="mainTabBar">
+            <button class="tab-btn active" onclick="switchMainTab('customerData', this)">
+              <i class="bi bi-table"></i> Customer Data
+              <span class="tab-count" id="tabCountCustomer">—</span>
+            </button>
+            <button class="tab-btn" onclick="switchMainTab('uploadHistory', this)">
+              <i class="bi bi-clock-history"></i> Upload History
+              <span class="tab-count" id="tabCountUploads">—</span>
+            </button>
+          </div>
+
+          <!-- ── Customer Data Tab ── -->
+          <div class="tab-pane active" id="pane-customerData">
+            <div class="card-panel-body pb-0">
+              <div class="search-row">
+                <div class="search-wrap">
+                  <i class="bi bi-search"></i>
+                  <input type="text" class="search-input" id="searchInput"
+                    placeholder="Search by name, PAN, GSTIN, or TAN…"
+                    oninput="filterCustomers()">
+                </div>
+                <select class="filter-select" onchange="filterCustomers()" id="statusFilter">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Loading / Error state -->
+            <div id="tableLoadingState" style="padding:32px; text-align:center; color:var(--text-hint); font-size:13px;">
+              <i class="bi bi-arrow-repeat" style="font-size:22px; display:block; margin-bottom:8px; opacity:0.5;"></i>
+              Loading customer data…
+            </div>
+            <div id="tableErrorState" style="display:none; padding:24px 16px;">
+              <div style="background:var(--danger-bg); color:var(--danger); font-size:12px; padding:10px 14px; border-radius:7px; display:flex; align-items:center; gap:8px;">
+                <i class="bi bi-exclamation-circle"></i>
+                <span id="tableErrorMsg">Could not load data from server.</span>
+              </div>
+            </div>
+
+            <div style="overflow-x:auto; display:none;" id="tableWrap">
+              <table class="data-table" id="customerTable">
+                <thead>
+                  <tr>
+                    <th style="width:36px; padding-left:16px;">
+                      <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" style="accent-color:var(--accent);">
+                    </th>
+                    <th onclick="sortTable('cust_name')">Customer <i class="bi bi-chevron-expand sort-icon"></i></th>
+                    <th onclick="sortTable('pan_number')">PAN <i class="bi bi-chevron-expand sort-icon"></i></th>
+                    <th onclick="sortTable('gstin_number')">GSTIN <i class="bi bi-chevron-expand sort-icon"></i></th>
+                    <th onclick="sortTable('tan_number')">TAN <i class="bi bi-chevron-expand sort-icon"></i></th>
+                    <th onclick="sortTable('cust_status')">Status <i class="bi bi-chevron-expand sort-icon"></i></th>
+                    
+                  </tr>
+                </thead>
+                <tbody id="customerTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="pagination-row" id="paginationRow" style="display:none;">
+              <div class="page-info">
+                Showing <span id="pageFrom">1</span>–<span id="pageTo">10</span>
+                of <span id="pageTotal">0</span> customers
+              </div>
+              <div class="page-btns" id="pageBtns"></div>
+            </div>
+          </div>
+
+          <!-- ── Upload History Tab ── -->
+          <div class="tab-pane" id="pane-uploadHistory">
+            <div id="uploadList">
+              <div class="empty-state">
+                <i class="bi bi-cloud-upload"></i>
+                <p>No uploads found</p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /card-panel -->
+      </div><!-- /left -->
+
+      <!-- Right: Detail Panel -->
+      <div id="detailSidebar">
+        <div class="detail-panel" id="detailPanel">
+          <div class="detail-header">
+            <div>
+              <div class="detail-title" id="detailName">Select a customer</div>
+              <div class="detail-subtitle" id="detailCode">Click any row to view details</div>
+            </div>
+            <span class="status-badge inactive" id="detailStatus">—</span>
+          </div>
+
+          <div class="info-grid" id="detailGrid">
+            <div class="info-row">
+              <div class="info-label">Customer Code</div>
+              <div class="info-value mono" id="dCode">—</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Status</div>
+              <div class="info-value" id="dStatus">—</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">PAN Number</div>
+              <div class="info-value mono" id="dPan">—</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">GSTIN</div>
+              <div class="info-value mono" id="dGstin" style="font-size:11px;">—</div>
+            </div>
+            <div class="info-row" style="grid-column:1/-1; border-right:none;">
+              <div class="info-label">TAN Number</div>
+              <div class="info-value mono" id="dTan">—</div>
+            </div>
+          </div>
+
+          
+        </div>
+      </div><!-- /right -->
+
+    </div><!-- /split-layout -->
+  </div><!-- /page-content -->
+</div><!-- /main-wrap -->
+
+       
+
+
+<script>
+// ══════════════
+//  CONFIGURATION 
+// ══════════════
+const API = {
+  stats        : '/api/customers/stats',
+  customers    : '/api/customers',   // GET ?search=&status=&page=&limit=
+  uploads      : '/api/uploads?module=customer_master',
+};
+
+// ── State ──
+let allCustomers      = [];
+let filteredCustomers = [];
+let selectedCustomer  = null;
+let currentPage       = 1;
+const rowsPerPage     = 10;
+
+const avatarColors = ['av-blue','av-teal','av-purple','av-amber','av-pink','av-green'];
+const initials = name => name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+// ════════════════════════════════════════════════════════
+//  API HELPERS
+// ════════════════════════════════════════════════════════
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+    ...opts
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || 'Server error');
+  }
+  return res.json();
+}
+
+// ════════════════════════════════════════════════════════
+//  BOOTSTRAP — load all data on page load
+// ════════════════════════════════════════════════════════
+async function loadAll() {
+  await Promise.all([loadStats(), loadCustomers(), loadUploads()]);
+}
+
+// ── Widget Stats ──
+async function loadStats() {
+  try {
+    const d = await apiFetch(API.stats);
+    // d = { total_customers, active_customers, total_tans, unlinked_tans }
+    document.getElementById('metricTotal').textContent  = d.total_customers  ?? '—';
+    document.getElementById('metricActive').textContent = d.active_customers ?? '—';
+    document.getElementById('metricTans').textContent   = d.total_tans       ?? '—';
+    if (d.total_customers && d.active_customers) {
+      const pct = ((d.active_customers / d.total_customers) * 100).toFixed(1);
+      document.getElementById('deltaActive').textContent = pct + '%';
+    }
+    if (d.unlinked_tans !== undefined) {
+      document.getElementById('deltaTans').textContent = d.unlinked_tans + ' unlinked';
+    }
+  } catch(e) { console.warn('Stats load failed:', e.message); }
+}
+
+// ── Customer Table ──
+async function loadCustomers() {
+  showTableState('loading');
+  try {
+    // Backend returns: { data: [...], total: N }
+    const resp = await apiFetch(API.customers + '?limit=1000');
+    allCustomers      = resp.data ?? resp;
+    filteredCustomers = [...allCustomers];
+    currentPage       = 1;
+    document.getElementById('tabCountCustomer').textContent = allCustomers.length;
+    showTableState('data');
+    renderCustomerTable();
+  } catch(e) {
+    showTableState('error', e.message);
+  }
+}
+
+function showTableState(state, msg) {
+  document.getElementById('tableLoadingState').style.display = state === 'loading' ? 'block' : 'none';
+  document.getElementById('tableErrorState').style.display   = state === 'error'   ? 'block' : 'none';
+  document.getElementById('tableWrap').style.display         = state === 'data'    ? 'block' : 'none';
+  document.getElementById('paginationRow').style.display     = state === 'data'    ? 'flex'  : 'none';
+  if (msg) document.getElementById('tableErrorMsg').textContent = msg;
+}
+
+// ── (TDS/TCS/Upload render & filter functions defined above) ──
+
+async function loadUploads() {
+  try {
+    const resp = await apiFetch(API.uploads);
+    const rows = resp.data ?? resp;
+    document.getElementById('tabCountUploads').textContent = resp.total ?? rows.length;
+    renderUploadHistory(rows);
+  } catch(e) { console.warn('Uploads load failed:', e.message); }
+}
+
+function renderUploadHistory(rows = []) {
+  const iconMap = { pdf:'bi-file-earmark-pdf', xlsx:'bi-file-earmark-excel', txt:'bi-file-earmark-text' };
+  const stMap   = { processed:'active', error:'inactive', pending:'pending', processing:'pending' };
+  document.getElementById('uploadList').innerHTML = rows.length
+    ? rows.map(u => `
+        <div class="upload-item">
+          <div class="upload-icon-wrap ${u.file_ext}">
+            <i class="bi ${iconMap[u.file_ext] || 'bi-file-earmark'}"></i>
+          </div>
+          <div class="upload-meta">
+            <div class="upload-filename">${u.orig_filename}</div>
+            <div class="upload-details">${u.uploaded_at} · ${u.file_size_kb} KB · ${u.uploaded_by_name || '—'}</div>
+          </div>
+          <div class="upload-status">
+            <span class="status-badge ${stMap[u.parse_status] || 'inactive'}">${u.parse_status}</span>
+          </div>
+        </div>`).join('')
+    : `<div class="empty-state"><i class="bi bi-cloud-upload"></i><p>No uploads found</p></div>`;
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER — CUSTOMER TABLE
+// ════════════════════════════════════════════════════════
+function renderCustomerTable() {
+  const tbody = document.getElementById('customerTableBody');
+  const start = (currentPage - 1) * rowsPerPage;
+  const slice = filteredCustomers.slice(start, start + rowsPerPage);
+
+  if (slice.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7">
+      <div class="empty-state"><i class="bi bi-search"></i><p>No customers match your filter</p></div>
+    </td></tr>`;
+    updatePagination(0, 'pageFrom','pageTo','pageTotal','pageBtns', currentPage, setPage);
+    return;
+  }
+
+  tbody.innerHTML = slice.map(c => {
+    const avIdx = allCustomers.indexOf(c) % avatarColors.length;
+    const av    = avatarColors[avIdx];
+    const init  = initials(c.cust_name || '');
+    const st    = (c.cust_status || '').toLowerCase();
+    const stCls = st === 'active' ? 'active' : 'inactive';
+    const dot   = st === 'active' ? 'bi-circle-fill' : 'bi-dash-circle-fill';
+    const isSel = selectedCustomer && selectedCustomer.cust_id === c.cust_id;
+    return `<tr onclick="selectCustomer(${c.cust_id})" class="${isSel ? 'selected' : ''}">
+      <td style="padding-left:16px;"><input type="checkbox" style="accent-color:var(--accent);" onclick="event.stopPropagation();"></td>
+      <td>
+        <div class="customer-cell">
+          <div class="cust-avatar ${av}">${init}</div>
+          <div>
+            <div class="cust-name">${c.cust_name}</div>
+            <div class="cust-code">${c.cust_code}</div>
+          </div>
+        </div>
+      </td>
+      <td class="mono-cell">${c.pan_number ?? '—'}</td>
+      <td class="mono-cell" style="font-size:11px;">${c.gstin_number ?? '—'}</td>
+      <td class="mono-cell">${c.tan_number ?? '—'}</td>
+      <td><span class="status-badge ${stCls}"><i class="bi ${dot}" style="font-size:7px;"></i>${c.cust_status}</span></td>
+    </tr>`;
+  }).join('');
+
+  updatePagination(filteredCustomers.length, 'pageFrom','pageTo','pageTotal','pageBtns', currentPage, setPage);
+}
+
+function setPage(p) { currentPage = p; renderCustomerTable(); }
+
+// ════════════════════════════════════════════════════════
+//  RENDER — TDS / TCS TABLES
+
+//  PAGINATION (shared helper)
+// ════════════════════════════════════════════════════════
+function updatePagination(total, fromId, toId, totalId, btnsId, currPg, setPageFn) {
+  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+  const start = total === 0 ? 0 : (currPg - 1) * rowsPerPage + 1;
+  const end   = Math.min(currPg * rowsPerPage, total);
+  document.getElementById(fromId).textContent  = start;
+  document.getElementById(toId).textContent    = end;
+  document.getElementById(totalId).textContent = total;
+  const btns = document.getElementById(btnsId);
+  btns.innerHTML = '';
+  for (let p = 1; p <= Math.min(totalPages, 7); p++) {
+    const btn = document.createElement('div');
+    btn.className = 'page-btn' + (p === currPg ? ' current' : '');
+    btn.textContent = p;
+    btn.onclick = () => setPageFn(p);
+    btns.appendChild(btn);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  FILTER & SORT
+// ════════════════════════════════════════════════════════
+function filterCustomers() {
+  const q  = document.getElementById('searchInput').value.toLowerCase();
+  const st = document.getElementById('statusFilter').value.toLowerCase();
+  filteredCustomers = allCustomers.filter(c => {
+    const matchQ = !q || [c.cust_name, c.pan_number, c.gstin_number, c.tan_number, c.cust_code]
+      .some(v => (v || '').toLowerCase().includes(q));
+    const matchSt = !st || (c.cust_status || '').toLowerCase() === st;
+    return matchQ && matchSt;
+  });
+  currentPage = 1;
+  renderCustomerTable();
+}
+
+
+
+let sortDir = {};
+function sortTable(field) {
+  sortDir[field] = sortDir[field] === 'asc' ? 'desc' : 'asc';
+  filteredCustomers.sort((a, b) =>
+    sortDir[field] === 'asc'
+      ? (a[field]||'').localeCompare(b[field]||'')
+      : (b[field]||'').localeCompare(a[field]||'')
+  );
+  currentPage = 1;
+  renderCustomerTable();
+}
+
+// ════════════════════════════════════════════════════════
+//  SELECT ROW → DETAIL PANEL
+// ════════════════════════════════════════════════════════
+async function selectCustomer(custId) {
+  selectedCustomer = allCustomers.find(c => c.cust_id === custId);
+  if (!selectedCustomer) return;
+  renderCustomerTable();
+
+  const c = selectedCustomer;
+  document.getElementById('detailName').textContent  = c.cust_name;
+  document.getElementById('detailCode').textContent  = c.cust_code;
+  document.getElementById('dCode').textContent       = c.cust_code;
+  document.getElementById('dPan').textContent        = c.pan_number  ?? '—';
+  document.getElementById('dGstin').textContent      = c.gstin_number ?? '—';
+  document.getElementById('dTan').textContent        = c.tan_number  ?? '—';
+  document.getElementById('dStatus').textContent     = c.cust_status ?? '—';
+
+  const st    = (c.cust_status || '').toLowerCase();
+  const stEl  = document.getElementById('detailStatus');
+  stEl.textContent = c.cust_status;
+  stEl.className   = 'status-badge ' + (st === 'active' ? 'active' : 'inactive');
+
+  // TDS linking — coming in next module increment
+  document.getElementById('linkedTds').innerHTML = `
+    <div style="text-align:center; padding:18px 10px; color:var(--text-hint);">
+      <i class="bi bi-hourglass-split" style="font-size:22px; display:block; margin-bottom:6px; opacity:0.4;"></i>
+      <p style="font-size:12px;">TDS linking available in next release</p>
+    </div>`;
+}
+
+
+function switchMainTab(tabId, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-' + tabId).classList.add('active');
+}
+
+function toggleSelectAll(cb) {
+  document.querySelectorAll('#customerTableBody input[type=checkbox]').forEach(el => el.checked = cb.checked);
+}
+
+// ── Start ──
+loadAll();
+</script>
+</body>
+</html>

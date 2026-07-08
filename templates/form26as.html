@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form 26AS – TDS & TCS Records</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root {
+    --navy: #0f1e3d; --navy-mid: #162850; --navy-light: #1e3668;
+    --accent: #2563eb; --accent-soft: #dbeafe; --accent-text: #1d4ed8;
+    --border: #e2e8f0; --surface: #f8fafc;
+    --text-main: #0f172a; --text-muted: #c3cbd7; --text-hint: #94a3b8;
+    --success: #16a34a; --success-bg: #dcfce7;
+    --warning: #b45309; --warning-bg: #fef3c7;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --mono: 'IBM Plex Mono', monospace; --sans: 'DM Sans', sans-serif;
+    --sidebar-w: 220px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: var(--sans); font-size: 14px; color: var(--text-main); background: var(--surface); }
+
+  /* ── Sidebar ── */
+  .sidebar { width: var(--sidebar-w); background: var(--navy); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100; }
+  .sidebar-brand { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .sidebar-brand .brand-tag { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.15em; color: rgba(247,235,235,0.962); text-transform: uppercase; margin-bottom: 4px; }
+  .sidebar-brand .brand-name { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.7; }
+  .sidebar-brand .brand-sub { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .nav-section-label { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.12em; color: rgba(255,255,255,0.99); text-transform: uppercase; padding: 16px 18px 6px; }
+  .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 18px; font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.58); text-decoration: none; transition: background 0.15s, color 0.15s; border-left: 3px solid transparent; }
+  .sidebar-nav a i { font-size: 15px; flex-shrink: 0; }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); }
+  .sidebar-nav a.active { background: rgba(37,99,235,0.18); color: #93c5fd; border-left-color: #3b82f6; font-weight: 500; }
+  .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.07); padding: 14px 18px; }
+  .user-pill { display: flex; align-items: center; gap: 10px; }
+  .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--navy-light); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 500; color: #93c5fd; flex-shrink: 0; }
+  .user-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
+  .user-role { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+  /* ── Main ── */
+  .main-wrap { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 28px; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .breadcrumb-wrap { display: flex; align-items: center; gap: 6px; }
+  .breadcrumb-wrap span { font-size: 12px;color:rgb(230, 10, 10);font-weight: 500; }
+  .breadcrumb-wrap .bc-sep { color: var(--text-hint); }
+  .breadcrumb-wrap .bc-current { font-weight: 500; color: var(--text-main); }
+
+  /* ── Page Content ── */
+  .page-content { padding: 24px 28px 40px; flex: 1; }
+  .page-header { margin-bottom: 20px; }
+  .page-title { font-size: 18px; font-weight: 600; color: var(--text-main); }
+  .page-subtitle { font-size: 12px; color: black; margin-top: 2px; }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
+  .filter-divider { width: 1px; height: 24px; background: var(--border); }
+  .filter-group { display: flex; align-items: center; gap: 8px; }
+  .filter-group label { font-size: 12px; color: black; font-weight: 500; white-space: nowrap; }
+  .filter-select {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text-main);
+    font-family: var(--sans);
+    cursor: pointer;
+    outline: none;
+    min-width: 160px;
+  }
+  .filter-select:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .btn-filter-apply {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    transition: background 0.14s;
+  }
+  .btn-filter-apply:hover { background: #1d4ed8; }
+  .btn-filter-reset {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: black;
+    transition: background 0.14s;
+  }
+  .btn-filter-reset:hover { background: var(--surface); color: var(--text-main); }
+  .active-filter-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: var(--mono);
+  }
+  .active-filter-tag button { background: none; border: none; cursor: pointer; color: var(--accent-text); padding: 0; font-size: 11px; line-height: 1; }
+
+  /* ── Metric Cards ── */
+  .metric-row { display: flex; gap: 16px; margin-bottom: 18px; }
+  .metric-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 18px 20px; position: relative; flex: 1; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .metric-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.6rem; -webkit-text-stroke: 0.75px currentColor; }
+  .metric-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .metric-value { font-size: 26px; font-weight: 700; color: #111827; line-height: 1; margin-bottom: 4px; }
+  .metric-sub { font-size: 11px; color: #6b7280; }
+  .metric-card.m-blue::before { background: #3b82f6; }
+  .metric-card.m-blue .metric-label { color: #3b82f6; }
+  .metric-card.m-blue .metric-icon { color: #3b82f6; }
+  .metric-card.m-teal::before { background: #14b8a6; }
+  .metric-card.m-teal .metric-label { color: #14b8a6; }
+  .metric-card.m-teal .metric-icon { color: #14b8a6; }
+  .metric-card.m-purple::before { background: #8b5cf6; }
+  .metric-card.m-purple .metric-label { color: #8b5cf6; }
+  .metric-card.m-purple .metric-icon { color: #8b5cf6; }
+  .metric-card.m-amber::before { background: #f59e0b; }
+  .metric-card.m-amber .metric-label { color: #f59e0b; }
+  .metric-card.m-amber .metric-icon { color: #f59e0b; }
+
+  /* ── Tabs ── */
+  .card-panel { background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: #fff; border-radius: 10px 10px 0 0; padding: 0 16px; }
+  .tab-btn { padding: 11px 16px; font-size: 13px; font-weight: 400; color: black; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.14s, border-color 0.14s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .tab-btn .tab-count { font-family: var(--mono); font-size: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--text-hint); }
+  .tab-btn.active { color: var(--accent-text); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab-btn.active .tab-count { background: var(--accent-soft); border-color: #bfdbfe; color: var(--accent-text); }
+  .tab-btn:hover:not(.active) { color: var(--text-main); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── Table ── */
+  .search-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px 0; }
+  .search-wrap { position: relative; flex: 1; }
+  .search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-hint); font-size: 14px; }
+  .search-input { width: 100%; padding: 8px 12px 8px 34px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; background: #fff; color: var(--text-main); outline: none; font-family: var(--sans); }
+  .search-input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead th { background: var(--surface); border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); padding: 9px 14px; font-size: 11px; font-weight: 600; color: black; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; user-select: none; }
+  .data-table thead th:hover { color: var(--text-main); }
+  .data-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: #f8fafc; }
+  .data-table td { padding: 10px 14px; color: black; vertical-align: middle; }
+  .data-table td.mono-cell { font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em; color: black; }
+
+  .section-badge-tds { font-family: var(--mono); font-size: 11px; font-weight: 600; background: var(--accent-soft); color: var(--accent-text); padding: 2px 7px; border-radius: 4px; }
+  .section-badge-tcs { font-family: var(--mono); font-size: 11px; font-weight: 600; background: #f0fdf4; color: var(--success); padding: 2px 7px; border-radius: 4px; }
+  .rate-cell { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+
+  /* ── Pagination ── */
+  .pagination-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--border); background: var(--surface); }
+  .page-info { font-size: 12px; color: rgb(46,43,43); }
+  .page-info span { font-family: var(--mono); }
+  .page-btns { display: flex; gap: 4px; }
+  .page-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 5px; background: #fff; font-size: 12px; cursor: pointer; color: black; transition: background 0.1s, color 0.1s; }
+  .page-btn:hover { background: var(--surface); color: var(--text-main); }
+  .page-btn.current { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text-hint); }
+  .empty-state i { font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.4; }
+  .empty-state p { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-tag">Form 26AS Utility</div>
+        <div class="brand-name">Reconciliation</div>
+        <div class="brand-sub">v1.0 · Internal</div>
+    </div>
+    
+    <div class="nav-section-label">Masters</div>
+    <div class="sidebar-nav">
+        <!-- Points to the root index path -->
+        <a href="/"><i class="bi bi-people"></i> Customer Master</a>
+        <!-- Points to /form26as route -->
+        <a href="/form26as" class="active"><i class="bi bi-file-earmark-text"></i> Form 26AS</a>
+    </div>
+    
+    <div class="nav-section-label">Operations</div>
+    <div class="sidebar-nav">
+        <!-- Points to /books-of-accounts route -->
+        <a href="/books-of-accounts"><i class="bi bi-journals"></i> Books of Accounts</a>
+        <!-- Points to /upload-utility route -->
+        <a href="/upload-utility"><i class="bi bi-upload"></i> Upload Utility</a>
+        <!-- Points to /reconciliation route -->
+        <a href="/reconciliation"><i class="bi bi-arrow-left-right"></i> Reconciliation</a>
+    </div>
+    
+    <div class="nav-section-label">Reports</div>
+    <div class="sidebar-nav">
+        <a href="/tds-summary"><i class="bi bi-file-earmark-bar-graph"></i> TDS Summary</a>
+        <a href="/audit-trail"><i class="bi bi-clipboard-data"></i> Audit Trail</a>
+    </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar">SR</div>
+      <div>
+        <div class="user-name">Sanjana Ravishankar</div>
+        <div class="user-role">Tax Analyst</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════ MAIN ════════════ -->
+<div class="main-wrap">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="breadcrumb-wrap">
+      <span>Masters</span>
+      <span class="bc-sep"><i class="bi bi-chevron-right" style="font-size:10px"></i></span>
+      <span class="bc-current">Form 26AS (TDS and TCS section codes) </span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="page-header">
+      <div class="page-title">Form 26AS (TDS and TCS Sections) </div>
+      <div class="page-subtitle">View TDS and TCS records. Filter by payee type.</div>
+    </div>
+
+    <!-- ── Filter Bar ── -->
+    <div class="filter-bar">
+      <span class="filter-bar-label"><i class="bi bi-funnel"></i> Filters</span>
+      <div class="filter-divider"></div>
+
+      <div class="filter-group">
+        <label>Applicable To</label>
+        <select class="filter-select" id="filterEntity">
+          <option value="">All</option>
+          <option value="INDIVIDUAL_HUF">Individual / HUF</option>
+          <option value="OTHERS">Others (Company / Firm)</option>
+        </select>
+      </div>
+
+   
+
+        
+
+      <button class="btn-filter-apply" onclick="applyFilters()"><i class="bi bi-check2"></i> Apply</button>
+      <button class="btn-filter-reset" onclick="resetFilters()"><i class="bi bi-x"></i> Reset</button>
+
+      <!-- Active filter tags rendered here -->
+      <div id="activeFilterTags" style="display:flex; gap:6px; flex-wrap:wrap; margin-left:4px;"></div>
+    </div>
+
+    <!-- ── Widget Cards ── -->
+    <div class="metric-row">
+      <div class="metric-card m-blue">
+        <div class="metric-label">TDS Records</div>
+        <div class="metric-value" id="metricTdsCount">—</div>
+        <div class="metric-sub">across all sections</div>
+        <i class="bi bi-receipt metric-icon"></i>
+      </div>
+      <div class="metric-card m-teal">
+        <div class="metric-label">TCS Records</div>
+        <div class="metric-value" id="metricTcsCount">—</div>
+        <div class="metric-sub">across all sections</div>
+        <i class="bi bi-receipt-cutoff metric-icon"></i>
+      </div>
+      
+    </div>
+
+    <!-- ── Main Tab Panel ── -->
+    <div class="card-panel">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('tds', this)">
+          <i class="bi bi-receipt"></i> TDS Records
+          <span class="tab-count" id="tabCountTds">—</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tcs', this)">
+          <i class="bi bi-receipt-cutoff"></i> TCS Records
+          <span class="tab-count" id="tabCountTcs">—</span>
+        </button>
+      </div>
+
+      <!-- ── TDS Tab ── -->
+      <div class="tab-pane active" id="pane-tds">
+        <div class="search-row" style="padding-bottom:12px;">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="search-input" id="tdsSearch"
+              placeholder="Search by GL code, section, description…"
+              oninput="filterTDS(this.value)">
+          </div>
+          <select class="filter-select" id="tdsSectionFilter" onchange="filterTDS('')" style="min-width:130px;">
+            <option value="">All Sections</option>
+            <option>192</option>
+            <option>192A</option>
+            <option>193</option>
+            <option>194</option>
+            <option>194A</option>
+            <option>194B</option>
+            <option>194BA</option>
+            <option>194BB</option>
+            <option>194C</option>
+            <option>194D</option>
+            <option>194DA</option>
+            <option>194EE</option>
+            <option>194F</option>
+            <option>194F</option>
+            <option>194G</option>
+            <option>194H</option>
+            <option>194I</option>
+            <option>194IA</option>
+            <option>194IB</option>
+            <option>194IC</option>
+            <option>194J</option>
+            <option>194K</option>
+            <option>194LA</option>
+            <option>194LB</option>
+            <option>194LBA</option>
+            <option>194LBB</option>
+            <option>194LBC</option>
+            <option>194M</option>
+            <option>194N</option>
+            <option>194O</option>
+            <option>194P</option>
+            <option>194Q</option>
+            <option>194R</option>
+            <option>194S</option>
+            <option>194T</option>
+            <option>195</option>
+            <option>OTHER</option>
+            <option>194E</option>
+            <option>194LC</option>
+            <option>194LD</option>
+
+          </select>
+        </div>
+
+        <!-- Loading state -->
+        <div id="tdsLoading" style="padding:32px; text-align:center; color:var(--text-hint); font-size:13px;">
+          <i class="bi bi-arrow-repeat" style="font-size:22px; display:block; margin-bottom:8px; opacity:0.5;"></i>
+          Loading TDS records…
+        </div>
+        <div id="tdsError" style="display:none; padding:16px;">
+          <div style="background:var(--danger-bg); color:var(--danger); font-size:12px; padding:10px 14px; border-radius:7px; display:flex; align-items:center; gap:8px;">
+            <i class="bi bi-exclamation-circle"></i>
+            <span id="tdsErrorMsg">Could not load TDS records.</span>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto; display:none;" id="tdsTableWrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>GL Code</th>
+                <th>Section</th>
+                <th>Sub Code</th>
+                <th>Rate (%)</th>
+                <th>Surcharge (%)</th>
+                <th>Cess (%)</th>
+                <th>Application Form</th>
+                <th>Applicable To</th>
+                <th>Description</th>
+                <th>Effective From</th>
+              </tr>
+            </thead>
+            <tbody id="tdsTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-row" id="tdsPaginationRow" style="display:none;">
+          <div class="page-info">Showing <span id="tdsFrom">1</span>–<span id="tdsTo">10</span> of <span id="tdsTotal">0</span> records</div>
+          <div class="page-btns" id="tdsPagBtns"></div>
+        </div>
+      </div>
+
+      <!-- ── TCS Tab ── -->
+      <div class="tab-pane" id="pane-tcs">
+        <div class="search-row" style="padding-bottom:12px;">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="search-input" id="tcsSearch"
+              placeholder="Search by GL code, section, description…"
+              oninput="filterTCS(this.value)">
+          </div>
+          <select class="filter-select" id="tcsSectionFilter" onchange="filterTCS('')" style="min-width:130px;">
+            <option value="">All Sections</option>
+            <option>394</option>
+          </select>
+        </div>
+
+        <div id="tcsLoading" style="padding:32px; text-align:center; color:var(--text-hint); font-size:13px;">
+          <i class="bi bi-arrow-repeat" style="font-size:22px; display:block; margin-bottom:8px; opacity:0.5;"></i>
+          Loading TCS records…
+        </div>
+        <div id="tcsError" style="display:none; padding:16px;">
+          <div style="background:var(--danger-bg); color:var(--danger); font-size:12px; padding:10px 14px; border-radius:7px; display:flex; align-items:center; gap:8px;">
+            <i class="bi bi-exclamation-circle"></i>
+            <span id="tcsErrorMsg">Could not load TCS records.</span>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto; display:none;" id="tcsTableWrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>GL Code</th>
+                <th>Section</th>
+                <th>Sub Code</th>
+                <th>Rate (%)</th>
+                <th>Surcharge (%)</th>
+                <th>Cess (%)</th>
+                <th>Application Form</th>
+                <th>Applicable To</th>
+                <th>Description</th>
+                <th>Effective From</th>
+              </tr>
+            </thead>
+            <tbody id="tcsTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-row" id="tcsPaginationRow" style="display:none;">
+          <div class="page-info">Showing <span id="tcsFrom">1</span>–<span id="tcsTo">10</span> of <span id="tcsTotal">0</span> records</div>
+          <div class="page-btns" id="tcsPagBtns"></div>
+        </div>
+      </div>
+
+    </div><!-- /card-panel -->
+  </div><!-- /page-content -->
+</div><!-- /main-wrap -->
+
+<script>
+// ════════════════════════════════════════════════════════
+//  API ENDPOINTS
+// ════════════════════════════════════════════════════════
+const API = {
+  customers : '/api/customers?limit=500',      
+  tds       : '/api/tds-codes',               
+  tcs       : '/api/tcs-codes',                
+  tdsStats  : '/api/tds-codes/stats',          
+  tcsStats  : '/api/tcs-codes/stats',
+};
+
+// ── State ──
+let allTds = [], filteredTds = [], tdsCurrPage = 1;
+let allTcs = [], filteredTcs = [], tcsCurrPage = 1;
+const rowsPerPage = 10;
+
+// Active filters
+let activeFilters = { entity: '', fin_year: '', quarter: '' };
+
+async function apiFetch(url) {
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || 'Server error');
+  }
+  return res.json();
+}
+
+// ═════════════════════
+//  INIT
+// ═════════════════════
+async function init() {
+  await populateEntityDropdown();
+  await Promise.all([loadTds(), loadTcs()]);
+}
+
+// ═══════════════════════════════════════
+//  DYNAMIC TAX ENTITY DROPDOWN POPULATION 
+// ═══════════════════════════════════════
+function populateEntityDropdown() {
+  // v2 tds_codes_master uses fixed payee_type values (ALL / INDIVIDUAL_HUF / OTHERS)
+  // Options are static in HTML — nothing to populate dynamically
+}
+
+// ══════════════════════════════════════
+// MASTER APPLY FILTERS BUTTON DISPATCHER 
+// ══════════════════════════════════════
+
+
+
+
+async function applyFilters() {
+  // 1. Correctly read the active selection values from your HTML filter dropdown elements
+  activeFilters.entity   = document.getElementById('filterEntity').value;
+ 
+  
+  // 2. Render the visual filter tags beneath the filter bar
+  renderFilterTags();
+  
+  // 3. Reset pagination counters back to page 1
+  tdsCurrPage = 1;
+  tcsCurrPage = 1;
+  
+  // 4. Fire the network calls to fetch new filtered data from your Flask backend tables
+  await Promise.all([
+    loadTds(),
+    loadTcs()
+  ]);
+  
+  // 5. If you have an inline keyword search text query active, re-apply it on top of the new rows
+  const tdsSearchText = document.getElementById('tdsSearch')?.value || '';
+  const tcsSearchText = document.getElementById('tcsSearch')?.value || '';
+  if (tdsSearchText) filterTDS(tdsSearchText);
+  if (tcsSearchText) filterTCS(tcsSearchText);
+}
+
+
+
+function resetFilters() {
+  document.getElementById('filterEntity').value  = '';
+ 
+ activeFilters = { entity: ''}
+  renderFilterTags();
+  tdsCurrPage = 1;
+  tcsCurrPage = 1;
+  loadTds();
+  loadTcs();
+}
+
+function renderFilterTags() {
+  const labels = {
+    entity   : document.getElementById('filterEntity').options[document.getElementById('filterEntity').selectedIndex]?.text,
+  
+  };
+  const wrap = document.getElementById('activeFilterTags');
+  wrap.innerHTML = Object.entries(activeFilters)
+    .filter(([, v]) => v)
+    .map(([k, v]) => `
+      <span class="active-filter-tag">
+        ${labels[k] || v}
+        <button onclick="clearFilter('${k}')"><i class="bi bi-x"></i></button>
+      </span>`).join('');
+}
+
+function clearFilter(key) {
+  activeFilters[key] = '';
+
+const elMap = { entity:'filterEntity'}
+  document.getElementById(elMap[key]).value = '';
+  renderFilterTags();
+  tdsCurrPage = tcsCurrPage = 1;
+  loadTds(); loadTcs();
+}
+
+function buildQueryString(extras = {}) {
+  const params = new URLSearchParams();
+  if (activeFilters.entity)   params.set('entity',   activeFilters.entity);
+ 
+  Object.entries(extras).forEach(([k, v]) => { if (v) params.set(k, v); });
+  params.set('limit', '1000');
+  return params.toString();
+}
+
+// ════════════════════════════════════════════════════════
+//  LOAD TDS
+// ════════════════════════════════════════════════════════
+async function loadTds() {
+  showState('tds', 'loading');
+  try {
+    const resp = await apiFetch(`${API.tds}?${buildQueryString()}`);
+    allTds = resp.data ?? resp;
+    filteredTds = [...allTds];
+    document.getElementById('tabCountTds').textContent    = allTds.length;
+    document.getElementById('metricTdsCount').textContent = allTds.length;
+    showState('tds', 'data');
+    renderTdsTable();
+  } catch(e) {
+    showState('tds', 'error', e.message);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  LOAD TCS
+// ════════════════════════════════════════════════════════
+async function loadTcs() {
+  showState('tcs', 'loading');
+  try {
+    const resp = await apiFetch(`${API.tcs}?${buildQueryString()}`);
+    allTcs = resp.data ?? resp;
+    filteredTcs = [...allTcs];
+    document.getElementById('tabCountTcs').textContent    = allTcs.length;
+    document.getElementById('metricTcsCount').textContent = allTcs.length;
+    showState('tcs', 'data');
+    renderTcsTable();
+  } catch(e) {
+    showState('tcs', 'error', e.message);
+  }
+}
+
+function showState(type, state, msg) {
+  document.getElementById(`${type}Loading`).style.display    = state === 'loading' ? 'block' : 'none';
+  document.getElementById(`${type}Error`).style.display      = state === 'error'   ? 'block' : 'none';
+  document.getElementById(`${type}TableWrap`).style.display  = state === 'data'    ? 'block' : 'none';
+  document.getElementById(`${type}PaginationRow`).style.display = state === 'data' ? 'flex'  : 'none';
+  if (msg) document.getElementById(`${type}ErrorMsg`).textContent = msg;
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER TDS TABLE
+// ════════════════════════════════════════════════════════
+function renderTdsTable() {
+  const start = (tdsCurrPage - 1) * rowsPerPage;
+  const slice = filteredTds.slice(start, start + rowsPerPage);
+  document.getElementById('tdsTableBody').innerHTML = slice.length
+    ? slice.map(t => `<tr>
+        <td class="mono-cell">${t.gl_code}</td>
+        <td><span class="section-badge-tds">${t.tds_section}</span></td>
+        <td class="mono-cell">${t.sub_code || '—'}</td>
+        <td><span class="rate-cell">${parseFloat(t.tds_rate).toFixed(2)}%</span></td>
+        <td class="mono-cell">${parseFloat(t.surcharge_pct||0).toFixed(2)}%</td>
+        <td class="mono-cell">${parseFloat(t.cess_pct||0).toFixed(2)}%</td>
+        <td class="mono-cell">${t.appln_form || '—'}</td>
+        <td style="font-size:12px;">${t.applicable_to}</td>
+        <td style="font-size:12px;">${t.tds_description}</td>
+        <td class="mono-cell" style="font-size:11px;">${t.eff_from_date || '—'}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="10"><div class="empty-state"><i class="bi bi-search"></i><p>No TDS records found</p></div></td></tr>`;
+  updatePagination(filteredTds.length, 'tdsFrom','tdsTo','tdsTotal','tdsPagBtns', tdsCurrPage,
+    p => { tdsCurrPage = p; renderTdsTable(); });
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER TCS TABLE
+// ════════════════════════════════════════════════════════
+function renderTcsTable() {
+  const start = (tcsCurrPage - 1) * rowsPerPage;
+  const slice = filteredTcs.slice(start, start + rowsPerPage);
+  document.getElementById('tcsTableBody').innerHTML = slice.length
+    ? slice.map(t => `<tr>
+        <td class="mono-cell">${t.gl_code}</td>
+        <td><span class="section-badge-tcs">${t.tcs_section}</span></td>
+        <td class="mono-cell">${t.sub_code || '—'}</td>
+        <td><span class="rate-cell">${parseFloat(t.tcs_rate).toFixed(2)}%</span></td>
+        <td class="mono-cell">${parseFloat(t.surcharge_pct||0).toFixed(2)}%</td>
+        <td class="mono-cell">${parseFloat(t.cess_pct||0).toFixed(2)}%</td>
+        <td class="mono-cell">${t.appln_form || '—'}</td>
+        <td style="font-size:12px;">${t.applicable_to}</td>
+        <td style="font-size:12px;">${t.tcs_description}</td>
+        <td class="mono-cell" style="font-size:11px;">${t.eff_from_date || '—'}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="10"><div class="empty-state"><i class="bi bi-search"></i><p>No TCS records found</p></div></td></tr>`;
+  updatePagination(filteredTcs.length, 'tcsFrom','tcsTo','tcsTotal','tcsPagBtns', tcsCurrPage,
+    p => { tcsCurrPage = p; renderTcsTable(); });
+}
+
+// ════════════════════════════════════════════════════════
+//  INLINE SEARCH (within already-loaded data)
+// ════════════════════════════════════════════════════════
+function filterTDS(q) {
+  const sec = document.getElementById('tdsSectionFilter').value.toLowerCase();
+  const ent = document.getElementById('entityFilter')?.value || 'ALL'; 
+  
+  filteredTds = allTds.filter(t => {
+    const matchQ   = !q   || [t.gl_code, t.tds_section, t.tds_description, t.applicable_to]
+                              .some(v => (v||'').toLowerCase().includes(q.toLowerCase()));
+    const matchSec = !sec || (t.tds_section||'').toLowerCase() === sec;
+    // v2 payee_type: ALL rows are always shown; INDIVIDUAL_HUF / OTHERS filter strictly
+    // A row with payee_type=ALL means it applies to everyone, so always include it
+    const rowType   = (t.applicable_to || '').trim().toUpperCase();
+    const matchEnt  = !ent || ent === 'ALL'
+                      || rowType === ent.toUpperCase()
+                      || rowType === 'ALL';
+    return matchQ && matchSec && matchEnt;
+  });
+  
+  tdsCurrPage = 1;
+  renderTdsTable();
+}
+
+function filterTCS(q) {
+  const sec = document.getElementById('tcsSectionFilter').value.toLowerCase();
+  const ent = document.getElementById('entityFilter')?.value || 'ALL'; 
+  
+  filteredTcs = allTcs.filter(t => {
+    const matchQ   = !q   || [t.gl_code, t.tcs_section, t.tcs_description, t.applicable_to]
+                              .some(v => (v||'').toLowerCase().includes(q.toLowerCase()));
+    const matchSec = !sec || (t.tcs_section||'').toLowerCase() === sec;
+    const rowType   = (t.applicable_to || '').trim().toUpperCase();
+    const matchEnt  = !ent || ent === 'ALL'
+                      || rowType === ent.toUpperCase()
+                      || rowType === 'ALL';
+    return matchQ && matchSec && matchEnt;
+  });
+  
+  tcsCurrPage = 1;
+  renderTcsTable();
+}
+
+
+
+
+// ════════════════════════════════════════════════════════
+//  PAGINATION
+// ════════════════════════════════════════════════════════
+function updatePagination(total, fromId, toId, totalId, btnsId, currPg, setPageFn) {
+  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+  const start = total === 0 ? 0 : (currPg - 1) * rowsPerPage + 1;
+  const end   = Math.min(currPg * rowsPerPage, total);
+  document.getElementById(fromId).textContent  = start;
+  document.getElementById(toId).textContent    = end;
+  document.getElementById(totalId).textContent = total;
+  const btns = document.getElementById(btnsId);
+  btns.innerHTML = '';
+  for (let p = 1; p <= Math.min(totalPages, 7); p++) {
+    const btn = document.createElement('div');
+    btn.className   = 'page-btn' + (p === currPg ? ' current' : '');
+    btn.textContent = p;
+    btn.onclick     = () => setPageFn(p);
+    btns.appendChild(btn);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  TAB SWITCH
+// ════════════════════════════════════════════════════════
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-' + tabId).classList.add('active');
+}
+
+// ── Start ──
+init();
+</script>
+</body>
+</html>

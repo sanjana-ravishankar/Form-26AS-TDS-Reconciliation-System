@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form 26AS – Books of Accounts</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root {
+    --navy: #0f1e3d; --navy-mid: #162850; --navy-light: #1e3668;
+    --accent: #2563eb; --accent-soft: #dbeafe; --accent-text: #1d4ed8;
+    --border: #e2e8f0; --surface: #f8fafc;
+    --text-main: #0f172a; --text-muted: #c3cbd7; --text-hint: #94a3b8;
+    --success: #16a34a; --success-bg: #dcfce7;
+    --warning: #b45309; --warning-bg: #fef3c7;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --mono: 'IBM Plex Mono', monospace; --sans: 'DM Sans', sans-serif;
+    --sidebar-w: 220px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: var(--sans); font-size: 14px; color: var(--text-main); background: var(--surface); }
+
+  /* ── Sidebar ── */
+  .sidebar { width: var(--sidebar-w); background: var(--navy); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100; }
+  .sidebar-brand { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .sidebar-brand .brand-tag { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.15em; color: rgba(247,235,235,0.962); text-transform: uppercase; margin-bottom: 4px; }
+  .sidebar-brand .brand-name { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.7; }
+  .sidebar-brand .brand-sub { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .nav-section-label { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.12em; color: rgba(255,255,255,0.99); text-transform: uppercase; padding: 16px 18px 6px; }
+  .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 18px; font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.58); text-decoration: none; transition: background 0.15s, color 0.15s; border-left: 3px solid transparent; }
+  .sidebar-nav a i { font-size: 15px; flex-shrink: 0; }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); }
+  .sidebar-nav a.active { background: rgba(37,99,235,0.18); color: #93c5fd; border-left-color: #3b82f6; font-weight: 500; }
+  .sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.07); padding: 14px 18px; }
+  .user-pill { display: flex; align-items: center; gap: 10px; }
+  .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--navy-light); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; font-weight: 500; color: #93c5fd; flex-shrink: 0; }
+  .user-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
+  .user-role { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+  /* ── Main ── */
+  .main-wrap { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 28px; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .breadcrumb-wrap { display: flex; align-items: center; gap: 6px; }
+  .breadcrumb-wrap span { font-size: 12px; color:rgb(230, 10, 10); font-weight: 500; }
+  .breadcrumb-wrap .bc-sep { color: var(--text-hint); }
+  .breadcrumb-wrap .bc-current { font-weight: 500; color: var(--text-main); }
+  
+  /* ── Page ── */
+  .page-content { padding: 24px 28px 40px; flex: 1; }
+  .page-header { margin-bottom: 20px; }
+  .page-title { font-size: 18px; font-weight: 600; }
+  .page-subtitle { font-size: 12px; color: black; margin-top: 2px; }
+
+  /* ── FY Selector Bar ── */
+  .fy-bar {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .fy-bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fy-divider { width: 1px; height: 24px; background: var(--border); }
+  .fy-select {
+    padding: 8px 14px;
+    border: 1.5px solid var(--text-hint);
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: var(--mono);
+    background: var(--accent-soft);
+    color: var(--accent);
+    cursor: pointer;
+    outline: none;
+    min-width: 160px;
+  }
+  .fy-select:focus { box-shadow: 0 0 0 3px rgba(89, 131, 224, 0.501); }
+  .fy-active-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--navy-light);
+    color: #93c5fd;
+    padding: 4px 10px;
+    border-radius: 5px;
+  }
+  .fy-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    transition: background 0.14s;
+  }
+  .fy-btn:hover { background: #1d4ed8; }
+
+  /* ── Metric Cards ── */
+  .metric-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .metric-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 18px 20px;
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .metric-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; -webkit-text-stroke: 0.75px currentColor; }
+  .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+  .metric-value { font-family: var(--mono); font-size: 20px; font-weight: 90; color: #111827; line-height: 1; margin-bottom: 3px; }
+  .metric-sub { font-size: 10px; color: #6b7280; }
+  .metric-card.m-blue::before  { background: #3b82f6; } .metric-card.m-blue  .metric-label { color: #3b82f6; } .metric-card.m-blue  .metric-icon { color: #3b82f6; }
+  .metric-card.m-teal::before  { background: #14b8a6; } .metric-card.m-teal  .metric-label { color: #14b8a6; } .metric-card.m-teal  .metric-icon { color: #14b8a6; }
+  .metric-card.m-indigo::before{ background: #6366f1; } .metric-card.m-indigo .metric-label { color: #6366f1; } .metric-card.m-indigo .metric-icon { color: #6366f1; }
+  .metric-card.m-green::before { background: #22c55e; } .metric-card.m-green .metric-label { color: #22c55e; } .metric-card.m-green .metric-icon { color: #22c55e; }
+  .metric-card.m-amber::before { background: #f59e0b; } .metric-card.m-amber .metric-label { color: #f59e0b; } .metric-card.m-amber .metric-icon { color: #f59e0b; }
+
+  /* ── Card / Tab Panel ── */
+  .card-panel { background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .card-panel-body { padding: 16px; }
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: #fff; border-radius: 10px 10px 0 0; padding: 0 16px; }
+  .tab-btn { padding: 11px 16px; font-size: 13px; font-weight: 400; color: black; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.14s, border-color 0.14s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .tab-btn .tab-count { font-family: var(--mono); font-size: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--text-hint); }
+  .tab-btn.active { color: var(--accent-text); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab-btn.active .tab-count { background: var(--accent-soft); border-color: #bfdbfe; color: var(--accent-text); }
+  .tab-btn:hover:not(.active) { color: var(--text-main); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── Search row ── */
+  .search-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px 0; }
+  .search-wrap { position: relative; flex: 1; }
+  .search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-hint); font-size: 14px; }
+  .search-input { width: 100%; padding: 8px 12px 8px 34px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; background: #fff; color: var(--text-main); outline: none; font-family: var(--sans); }
+  .search-input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .filter-select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; background: #fff; color: var(--text-main); font-family: var(--sans); cursor: pointer; outline: none; }
+  .filter-select:focus { border-color: #93c5fd; }
+
+  /* ── Data Table ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead th { background: var(--surface); border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); padding: 9px 14px; font-size: 11px; font-weight: 600; color: black; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; user-select: none; }
+  .data-table thead th:hover { color: #333; }
+  .data-table thead th .sort-icon { margin-left: 4px; opacity: 0.35; font-size: 10px; }
+  .data-table thead th.num { text-align: right; }
+  .data-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: #f8fafc; }
+  .data-table tbody tr.selected { background: #eff6ff; }
+  .data-table td { padding: 10px 14px; color: black; vertical-align: middle; }
+  .data-table td.mono-cell { font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em; }
+  .data-table td.num { text-align: right; font-family: var(--mono); font-size: 12px; }
+  .data-table td.amt { text-align: right; font-family: var(--mono); font-size: 12px; font-weight: 500; }
+  .data-table tfoot td { background: var(--surface); border-top: 2px solid var(--border); padding: 9px 14px; font-weight: 700; font-size: 12px; font-family: var(--mono); }
+  .data-table tfoot td.lbl { font-family: var(--sans); font-size: 12px; font-weight: 700; color: var(--text-main); }
+
+  /* ── Amounts ── */
+  .amt-positive { color: #15803d; }
+  .amt-negative { color: var(--danger); }
+  .amt-neutral  { color: var(--text-main); }
+
+  /* status badges */
+  .rec-badge { display: inline-flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
+  .rec-badge.matched    { background: var(--success-bg); color: var(--success); }
+  .rec-badge.unmatched  { background: var(--danger-bg); color: var(--danger); }
+  .rec-badge.partial    { background: var(--warning-bg); color: var(--warning); }
+  .rec-badge.unreferenced { background: #f1f5f9; color: #64748b; border: 1px solid var(--border); }
+
+  /* ── Pagination ── */
+  .pagination-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--border); background: var(--surface); }
+  .page-info { font-size: 12px; color: rgb(46,43,43); }
+  .page-info span { font-family: var(--mono); }
+  .page-btns { display: flex; gap: 4px; }
+  .page-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 5px; background: #fff; font-size: 12px; cursor: pointer; color: black; transition: background 0.1s, color 0.1s; }
+  .page-btn:hover { background: var(--surface); color: var(--text-main); }
+  .page-btn.current { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+
+  /* ── Upload items ── */
+  .upload-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .upload-item:last-child { border-bottom: none; }
+  .upload-icon-wrap { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .upload-icon-wrap.pdf  { background: #fee2e2; color: #dc2626; }
+  .upload-icon-wrap.xlsx { background: #dcfce7; color: #16a34a; }
+  .upload-icon-wrap.txt  { background: #dbeafe; color: #2563eb; }
+  .upload-meta { flex: 1; min-width: 0; }
+  .upload-filename { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upload-details { font-size: 11px; color: black; margin-top: 2px; font-family: var(--mono); }
+  .upload-status { text-align: right; }
+  .status-badge { display: inline-flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 4px; }
+  .status-badge.active   { background: var(--success-bg); color: var(--success); }
+  .status-badge.inactive { background: #f1f5f9; color: #64748b; border: 1px solid var(--border); }
+  .status-badge.pending  { background: var(--warning-bg); color: var(--warning); }
+
+  /* ── Empty / Loading ── */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text-hint); }
+  .empty-state i { font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.4; }
+  .empty-state p { font-size: 13px; }
+  .loading-state { padding: 32px; text-align: center; color: var(--text-hint); font-size: 13px; }
+  .loading-state i { font-size: 22px; display: block; margin-bottom: 8px; opacity: 0.5; }
+  .error-bar { background: var(--danger-bg); color: var(--danger); font-size: 12px; padding: 10px 14px; border-radius: 7px; display: flex; align-items: center; gap: 8px; margin: 16px; }
+
+  /* ── Adjustments panel ── */
+  .adj-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 16px 0;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .adj-item { display: flex; flex-direction: column; gap: 3px; }
+  .adj-label { font-size: 10px; font-weight: 600; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.07em; }
+  .adj-value { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--text-main); }
+  .adj-divider { width: 1px; height: 36px; background: var(--border); }
+</style>
+</head>
+<body>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-tag">Form 26AS Utility</div>
+        <div class="brand-name">Reconciliation</div>
+        <div class="brand-sub">v1.0 · Internal</div>
+    </div>
+    
+    <div class="nav-section-label">Masters</div>
+    <div class="sidebar-nav">
+        <!-- Points to the root index path -->
+        <a href="/"><i class="bi bi-people"></i> Customer Master</a>
+        <!-- Points to /form26as route -->
+        <a href="/form26as"><i class="bi bi-file-earmark-text"></i> Form 26AS</a>
+    </div>
+    
+    <div class="nav-section-label">Operations</div>
+    <div class="sidebar-nav">
+        <!-- Points to /books-of-accounts route -->
+        <a href="/books-of-accounts" class="active"><i class="bi bi-journals"></i> Books of Accounts</a>
+        <!-- Points to /upload-utility route -->
+        <a href="/upload-utility"><i class="bi bi-upload"></i> Upload Utility</a>
+        <!-- Points to /reconciliation route -->
+        <a href="/reconciliation"><i class="bi bi-arrow-left-right"></i> Reconciliation</a>
+    </div>
+    
+    <div class="nav-section-label">Reports</div>
+    <div class="sidebar-nav">
+        <a href="/tds-summary"><i class="bi bi-file-earmark-bar-graph"></i> TDS Summary</a>
+        <a href="/audit-trail"><i class="bi bi-clipboard-data"></i> Audit Trail</a>
+    </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar">SR</div>
+      <div>
+        <div class="user-name">Sanjana Ravishankar</div>
+        <div class="user-role">Tax Analyst</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  
+
+<!-- ════════════ MAIN ════════════ -->
+<div class="main-wrap">
+
+  <div class="topbar">
+    <div class="breadcrumb-wrap">
+      <span>Operations</span>
+      <span class="bc-sep"><i class="bi bi-chevron-right" style="font-size:10px"></i></span>
+      <span class="bc-current">Books of Accounts</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="page-header">
+      <div class="page-title">Books of Accounts</div>
+      <div class="page-subtitle">Income, TDS deductible, and reconciliation data pulled from the sales register for the selected financial year.</div>
+    </div>
+
+    <!-- ── Financial Year Selector (Key Input) ── -->
+    <div class="fy-bar">
+      <span class="fy-bar-label"><i class="bi bi-calendar3"></i> Financial Year</span>
+      <div class="fy-divider"></div>
+      <select class="fy-select" id="fySelector" onchange="onFYChange()">
+        <option value="">— Select FY —</option>
+        <option value="2025-26">FY 2025–26</option>
+        <option value="2024-25">FY 2024–25</option>
+        <option value="2023-24">FY 2023–24</option>
+        <option value="2022-23">FY 2022–23</option>
+        <option value="2021-22">FY 2021–22</option>
+        <option value="2020-21">FY 2020–21</option>
+      </select>
+      <span class="fy-active-tag" id="fyActiveTag" style="display:none;"></span>
+      <button class="fy-btn" onclick="loadForFY()"><i class="bi bi-arrow-clockwise"></i> Load</button>
+      <span id="fyLoadStatus" style="font-size:12px; color:black; margin-left:4px;"></span>
+    </div>
+
+    <!-- ── Widget Cards ── -->
+    <div class="metric-row">
+      <div class="metric-card m-blue">
+        <div class="metric-label">Income as per Sales Register</div>
+        <div class="metric-value" id="wSalesIncome">—</div>
+        <div class="metric-sub">gross invoiced amount</div>
+      <i class="bi bi-graph-up metric-icon"></i>
+      </div>
+      <div class="metric-card m-teal">
+        <div class="metric-label">Adjustments</div>
+        <div class="metric-value" id="wAdjustments">—</div>
+        <div class="metric-sub">credit notes / deductions</div>
+        <i class="bi bi-plus-slash-minus metric-icon"></i>
+      </div>
+      <div class="metric-card m-indigo">
+        <div class="metric-label">Linked Adjustments</div>
+        <div class="metric-value" id="wLinkedAdj">—</div>
+        <div class="metric-sub">matched to invoices</div>
+        <i class="bi bi-link metric-icon"></i>
+      </div>
+      <div class="metric-card m-green">
+        <div class="metric-label">Total Income</div>
+        <div class="metric-value" id="wTotalIncome">—</div>
+        <div class="metric-sub">net taxable income</div>
+     <i class="bi bi-currency-rupee metric-icon"></i>
+      </div>
+      <div class="metric-card m-amber">
+        <div class="metric-label">TDS Deductible</div>
+        <div class="metric-value" id="wTdsDeductible">—</div>
+        <div class="metric-sub">expected deduction</div>
+        <i class="bi bi-receipt metric-icon"></i>
+      </div>
+    </div>
+
+    <!-- ── Tab Panel ── -->
+    <div class="card-panel">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('summary', this)">
+          <i class="bi bi-table"></i> Summary
+          <span class="tab-count" id="tabCountSummary">—</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('detailed', this)">
+          <i class="bi bi-list-columns"></i> Detailed
+          <span class="tab-count" id="tabCountDetailed">—</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('incomeRecords', this)">
+          <i class="bi bi-file-earmark-spreadsheet"></i> Income Records
+          <span class="tab-count" id="tabCountIncome">—</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('unreferenced', this)">
+          <i class="bi bi-exclamation-circle"></i> Unreferenced Entries
+          <span class="tab-count" id="tabCountUnref">—</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('uploadHistory', this)">
+          <i class="bi bi-clock-history"></i> Upload History
+          <span class="tab-count" id="tabCountUploads">—</span>
+        </button>
+      </div>
+
+      <!-- ══════════════════════════════
+           TAB 1 — SUMMARY
+           Columns: Customer Name, Taxable Amount, Gross Amount,
+                    TDS Deductible, Collection Amount, TDS Receivable
+      ══════════════════════════════ -->
+      <div class="tab-pane active" id="pane-summary">
+        <div class="search-row" style="padding-bottom:12px;">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="search-input" id="summarySearch"
+              placeholder="Search by customer name…"
+              oninput="filterSummary(this.value)">
+          </div>
+          
+          <select id="summaryStatusFilter" class="form-select" onchange="loadSummary()">
+          <option value="ALL">All Customers</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          </select>
+
+        </div>
+
+        <div class="loading-state" id="summaryLoading">
+          <i class="bi bi-arrow-repeat"></i> Select a financial year and click Load.
+        </div>
+        <div id="summaryError" style="display:none;">
+          <div class="error-bar"><i class="bi bi-exclamation-circle"></i><span id="summaryErrorMsg"></span></div>
+        </div>
+        <div style="overflow-x:auto; display:none;" id="summaryTableWrap">
+          <table class="data-table" id="summaryTable">
+            <thead>
+              <tr>
+                <th onclick="sortSummary('cust_name')">Customer Name <i class="bi bi-chevron-expand sort-icon"></i></th>
+                <th class="num" onclick="sortSummary('taxable_amt')">Taxable Amount <i class="bi bi-chevron-expand sort-icon"></i></th>
+                <th class="num" onclick="sortSummary('gross_amt')">Gross Amount <i class="bi bi-chevron-expand sort-icon"></i></th>
+                <th class="num" onclick="sortSummary('tds_deductible')">TDS Deductible <i class="bi bi-chevron-expand sort-icon"></i></th>
+                <th class="num" onclick="sortSummary('collection_amt')">Collection Amount <i class="bi bi-chevron-expand sort-icon"></i></th>
+                <th class="num" onclick="sortSummary('tds_receivable')">TDS Receivable <i class="bi bi-chevron-expand sort-icon"></i></th>
+              </tr>
+            </thead>
+            <tbody id="summaryTableBody"></tbody>
+            <tfoot id="summaryTableFoot"></tfoot>
+          </table>
+        </div>
+        <div class="pagination-row" id="summaryPaginationRow" style="display:none;">
+          <div class="page-info">Showing <span id="sumFrom">1</span>–<span id="sumTo">10</span> of <span id="sumTotal">0</span> customers</div>
+          <div class="page-btns" id="sumPagBtns"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           TAB 2 — DETAILED
+           Invoice-level breakdown per customer
+      ══════════════════════════════ -->
+      <div class="tab-pane" id="pane-detailed">
+        <div class="search-row" style="padding-bottom:12px;">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="search-input" id="detailSearch"
+              placeholder="Search by customer, invoice no, description…"
+              oninput="filterDetailed(this.value)">
+          </div>
+          <select class="filter-select" id="detailMonthFilter" onchange="filterDetailed('')">
+            <option value="">All Months</option>
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+            
+          </select>
+        </div>
+        <div class="loading-state" id="detailedLoading">
+          <i class="bi bi-arrow-repeat"></i> Select a financial year and click Load.
+        </div>
+        <div id="detailedError" style="display:none;">
+          <div class="error-bar"><i class="bi bi-exclamation-circle"></i><span id="detailedErrorMsg"></span></div>
+        </div>
+        <div style="overflow-x:auto; display:none;" id="detailedTableWrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Invoice No</th>
+                <th class="num">Invoice Date</th>
+                <th class="num">Taxable Amount</th>
+                <th class="num">Gross Amount</th>
+                
+                <th class="num">TDS Deductible</th>
+                <th class="num">Collection Amount</th>
+                <th class="num">TDS Receivable</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="detailedTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-row" id="detailedPaginationRow" style="display:none;">
+          <div class="page-info">Showing <span id="detFrom">1</span>–<span id="detTo">10</span> of <span id="detTotal">0</span> entries</div>
+          <div class="page-btns" id="detPagBtns"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           TAB 3 — INCOME RECORDS
+           Raw rows from the uploaded sales register
+      ══════════════════════════════ -->
+      <div class="tab-pane" id="pane-incomeRecords">
+        <div class="search-row" style="padding-bottom:12px;">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="search-input" id="incomeSearch"
+              placeholder="Search income records…"
+              oninput="filterIncome(this.value)">
+          </div>
+          <select id="incomeSourceFilter" class="form-select" onchange="const searchVal = document.getElementById('incomeSearchInput') ? document.getElementById('incomeSearchInput').value : ''; filterIncome(searchVal);">
+          <option value="">All Sources</option>
+          <option value="sales_register">Sales Register</option>
+          <option value="manual_entry">Manual Entry</option>
+          </select>
+
+        </div>
+        <div class="loading-state" id="incomeLoading">
+          <i class="bi bi-arrow-repeat"></i> Select a financial year and click Load.
+        </div>
+        <div id="incomeError" style="display:none;">
+          <div class="error-bar"><i class="bi bi-exclamation-circle"></i><span id="incomeErrorMsg"></span></div>
+        </div>
+        <div style="overflow-x:auto; display:none;" id="incomeTableWrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Document No</th>
+                <th class="num">Document Date</th>
+                <th>Document Type</th>
+                <th class="num">Taxable Amount</th>
+                <th class="num">Tax Amount</th>
+                <th class="num">Gross Amount</th>
+                <th>Source</th>
+                <th>Upload Ref</th>
+              </tr>
+            </thead>
+            <tbody id="incomeTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-row" id="incomePaginationRow" style="display:none;">
+          <div class="page-info">Showing <span id="incFrom">1</span>–<span id="incTo">10</span> of <span id="incTotal">0</span> records</div>
+          <div class="page-btns" id="incPagBtns"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           TAB 4 — UNREFERENCED ENTRIES
+           Entries that could not be linked to a customer
+      ══════════════════════════════ -->
+      <div class="tab-pane" id="pane-unreferenced">
+        <div class="search-row" style="padding-bottom:12px;">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="search-input" id="unrefSearch"
+              placeholder="Search unreferenced entries…"
+              oninput="filterUnref(this.value)">
+          </div>
+          <select class="filter-select" id="unrefReasonFilter" onchange="filterUnref('')">
+            <option value="">All Reasons</option>
+            <option value="no_pan">No PAN Match</option>
+            <option value="no_tan">No TAN Match</option>
+            <option value="no_customer">No Customer Match</option>
+            <option value="duplicate">Possible Duplicate</option>
+          </select>
+        </div>
+        <div class="loading-state" id="unrefLoading">
+          <i class="bi bi-arrow-repeat"></i> Select a financial year and click Load.
+        </div>
+        <div id="unrefError" style="display:none;">
+          <div class="error-bar"><i class="bi bi-exclamation-circle"></i><span id="unrefErrorMsg"></span></div>
+        </div>
+        <div style="overflow-x:auto; display:none;" id="unrefTableWrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Raw Name / Identifier</th>
+                <th>Document No</th>
+                <th class="num">Document Date</th>
+                <th class="num">Amount</th>
+                <th>Unref Reason</th>
+                <th>Upload Ref</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="unrefTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-row" id="unrefPaginationRow" style="display:none;">
+          <div class="page-info">Showing <span id="unrefFrom">1</span>–<span id="unrefTo">10</span> of <span id="unrefTotal">0</span> entries</div>
+          <div class="page-btns" id="unrefPagBtns"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           TAB 5 — UPLOAD HISTORY
+      ══════════════════════════════ -->
+      <div class="tab-pane" id="pane-uploadHistory">
+        <div id="uploadList">
+          <div class="empty-state">
+            <i class="bi bi-cloud-upload"></i>
+            <p>No uploads found for the selected financial year</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /card-panel -->
+  </div><!-- /page-content -->
+</div><!-- /main-wrap -->
+
+<script>
+// ════════════════════════════════════════════════════════
+//  API
+// ════════════════════════════════════════════════════════
+const API = {
+  widgets      : (fy) => `/api/books/widgets?fin_year=${fy}`,
+  summary: (fy, status = '') => `/api/books/summary?fin_year=${fy}&status=${status}&limit=1000`,
+  detailed     : (fy) => `/api/books/detailed?fin_year=${fy}&limit=1000`,
+  incomeRecords: (fy) => `/api/books/income-records?fin_year=${fy}&limit=1000`,
+  unreferenced : (fy) => `/api/books/unreferenced?fin_year=${fy}&limit=1000`,
+  uploads      : (fy) => `/api/uploads?module=books_of_accounts`,
+};
+
+// ── State ──
+let currentFY = '';
+const rowsPerPage = 10;
+
+let allSummary  = [], filteredSummary  = [], summaryPage  = 1;
+let allDetailed = [], filteredDetailed = [], detailedPage = 1;
+let allIncome   = [], filteredIncome   = [], incomePage   = 1;
+let allUnref    = [], filteredUnref    = [], unrefPage    = 1;
+
+async function apiFetch(url) {
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || 'Server error');
+  }
+  return res.json();
+}
+
+const fmt = (v) => {
+  if (v === null || v === undefined || v === '') return '—';
+  const n = parseFloat(v);
+  if (isNaN(n)) return '—';
+  return '₹\u00a0' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
+// ════════════════════════════════════════════════════════
+//  FY SELECTION
+// ════════════════════════════════════════════════════════
+function onFYChange() {
+  const fy = document.getElementById('fySelector').value;
+  const tag = document.getElementById('fyActiveTag');
+  if (fy) {
+    tag.textContent = 'FY ' + fy;
+    tag.style.display = 'inline-block';
+  } else {
+    tag.style.display = 'none';
+  }
+}
+
+async function loadForFY() {
+  const fy = document.getElementById('fySelector').value;
+  if (!fy) {
+    document.getElementById('fyLoadStatus').textContent = 'Please select a financial year.';
+    return;
+  }
+  currentFY = fy;
+  document.getElementById('fyLoadStatus').textContent = '';
+  onFYChange();
+
+  await Promise.all([
+    loadWidgets(),
+    loadSummary(),
+    loadDetailed(),
+    loadIncomeRecords(),
+    loadUnreferenced(),
+    loadUploads(),
+  ]);
+}
+
+// ════════════════════════════════════════════════════════
+//  WIDGETS
+// ════════════════════════════════════════════════════════
+async function loadWidgets() {
+  try {
+    const d = await apiFetch(API.widgets(currentFY));
+    document.getElementById('wSalesIncome').textContent   = fmt(d.sales_income);
+    document.getElementById('wAdjustments').textContent   = fmt(d.adjustments);
+    document.getElementById('wLinkedAdj').textContent     = fmt(d.linked_adjustments);
+    document.getElementById('wTotalIncome').textContent   = fmt(d.total_income);
+    document.getElementById('wTdsDeductible').textContent = fmt(d.tds_deductible);
+  } catch(e) {
+    ['wSalesIncome','wAdjustments','wLinkedAdj','wTotalIncome','wTdsDeductible']
+      .forEach(id => document.getElementById(id).textContent = '—');
+    console.warn('Widget load failed:', e.message);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  SUMMARY TAB
+// ════════════════════════════════════════════════════════
+async function loadSummary() {
+  showState('summary', 'loading');
+  try {
+    // Reads the active selected value from your Status Dropdown element
+    const statusVal = document.getElementById('summaryStatusFilter')?.value || '';
+    
+    // Pass both the financial year and status selection to the API call
+    const resp = await apiFetch(API.summary(currentFY, statusVal));
+    allSummary = resp.data ?? resp;
+    filteredSummary = [...allSummary];
+    summaryPage = 1;
+    
+    document.getElementById('tabCountSummary').textContent = allSummary.length;
+    showState('summary', 'data');
+    renderSummary();
+  } catch(e) { 
+    showState('summary', 'error', e.message); 
+  }
+}
+
+
+function renderSummary() {
+  const start = (summaryPage - 1) * rowsPerPage;
+  const slice = filteredSummary.slice(start, start + rowsPerPage);
+  const tbody = document.getElementById('summaryTableBody');
+
+  if (!slice.length) {
+    tbody.innerHTML = `<tr><td colspan="6">
+      <div class="empty-state"><i class="bi bi-search"></i><p>No records found</p></div>
+    </td></tr>`;
+    document.getElementById('summaryTableFoot').innerHTML = '';
+    updatePagination(0,'sumFrom','sumTo','sumTotal','sumPagBtns',summaryPage,p=>{summaryPage=p;renderSummary();});
+    return;
+  }
+
+  tbody.innerHTML = slice.map(r => `<tr>
+    <td>${r.cust_name}</td>
+    <td class="amt">${fmt(r.taxable_amt)}</td>
+    <td class="amt">${fmt(r.gross_amt)}</td>
+    <td class="amt amt-positive">${fmt(r.tds_deductible)}</td>
+    <td class="amt">${fmt(r.collection_amt)}</td>
+    <td class="amt amt-positive">${fmt(r.tds_receivable)}</td>
+  </tr>`).join('');
+
+  // Footer totals
+  const cols = ['taxable_amt','gross_amt','tds_deductible','collection_amt','tds_receivable'];
+  const totals = cols.map(col =>
+    filteredSummary.reduce((s, r) => s + (parseFloat(r[col]) || 0), 0)
+  );
+ const totalPages = Math.ceil(filteredSummary.length / rowsPerPage);
+
+if (summaryPage === totalPages || totalPages === 0) {
+  // User is on the last page -> Paint the totals row!
+  document.getElementById('summaryTableFoot').innerHTML = `<tr>
+    <td class="lbl" style="font-weight:700; background-color: var(--card-bg);">Total (${filteredSummary.length} customers)</td>
+    ${totals.map(t => `<td class="num" style="font-weight:700; background-color: var(--card-bg);">${fmt(t)}</td>`).join('')}
+  </tr>`;
+} else {
+  // User is on page 1 -> Hide the totals completely
+  document.getElementById('summaryTableFoot').innerHTML = '';
+}
+
+  updatePagination(filteredSummary.length,'sumFrom','sumTo','sumTotal','sumPagBtns',summaryPage,p=>{summaryPage=p;renderSummary();});
+}
+
+function filterSummary(q) {
+  const st = document.getElementById('summaryStatusFilter').value;
+  filteredSummary = allSummary.filter(r => {
+    const matchQ  = !q  || (r.cust_name||'').toLowerCase().includes(q.toLowerCase());
+    const matchSt = !st || (r.cust_status||'').toLowerCase() === st;
+    return matchQ && matchSt;
+  });
+  summaryPage = 1;
+  renderSummary();
+}
+
+let sumSortDir = {};
+function sortSummary(field) {
+  sumSortDir[field] = sumSortDir[field] === 'asc' ? 'desc' : 'asc';
+  filteredSummary.sort((a, b) => {
+    const va = parseFloat(a[field]) || a[field] || '';
+    const vb = parseFloat(b[field]) || b[field] || '';
+    if (typeof va === 'number') return sumSortDir[field] === 'asc' ? va - vb : vb - va;
+    return sumSortDir[field] === 'asc' ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+  });
+  summaryPage = 1;
+  renderSummary();
+}
+
+// ════════════════════════════════════════════════════════
+//  DETAILED TAB
+// ════════════════════════════════════════════════════════
+async function loadDetailed() {
+  showState('detailed', 'loading');
+  try {
+    const resp     = await apiFetch(API.detailed(currentFY));
+    allDetailed    = resp.data ?? resp;
+    filteredDetailed = [...allDetailed];
+    detailedPage   = 1;
+    document.getElementById('tabCountDetailed').textContent = allDetailed.length;
+    showState('detailed', 'data');
+    renderDetailed();
+  } catch(e) { showState('detailed', 'error', e.message); }
+}
+
+function renderDetailed() {
+  const start = (detailedPage - 1) * rowsPerPage;
+  const slice = filteredDetailed.slice(start, start + rowsPerPage);
+  document.getElementById('detailedTableBody').innerHTML = slice.length
+    ? slice.map(r => `<tr>
+        <td>${r.cust_name}</td>
+        <td class="mono-cell">${r.invoice_no || '—'}</td>
+        <td class="mono-cell num">${r.invoice_date || '—'}</td>
+        <td class="amt">${fmt(r.taxable_amt)}</td>
+        <td class="amt">${fmt(r.gross_amt)}</td>
+        
+        <td class="amt amt-positive">${fmt(r.tds_deductible)}</td>
+        <td class="amt">${fmt(r.collection_amt)}</td>
+        <td class="amt amt-positive">${fmt(r.tds_receivable)}</td>
+        <td style="font-size:12px; color:black;">${r.remarks || '—'}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="11"><div class="empty-state"><i class="bi bi-search"></i><p>No records found</p></div></td></tr>`;
+  updatePagination(filteredDetailed.length,'detFrom','detTo','detTotal','detPagBtns',detailedPage,p=>{detailedPage=p;renderDetailed();});
+}
+
+function filterDetailed(q) {
+  const month = document.getElementById('detailMonthFilter').value;
+  filteredDetailed = allDetailed.filter(r => {
+    const matchQ  = !q || [r.cust_name,r.invoice_no,r.remarks,r.tds_section]
+                          .some(v => (v||'').toLowerCase().includes(q.toLowerCase()));
+    const matchMo = !month || (r.invoice_date||'').includes('-'+month+'-') ||
+                              (r.invoice_date||'').slice(5,7) === month;
+    return matchQ && matchMo;
+  });
+  detailedPage = 1;
+  renderDetailed();
+}
+
+// ════════════════════════════════════════════════════════
+//  INCOME RECORDS TAB
+// ════════════════════════════════════════════════════════
+async function loadIncomeRecords() {
+  showState('income', 'loading');
+  try {
+    const resp    = await apiFetch(API.incomeRecords(currentFY));
+    allIncome     = resp.data ?? resp;
+    filteredIncome = [...allIncome];
+    incomePage    = 1;
+    document.getElementById('tabCountIncome').textContent = allIncome.length;
+    showState('income', 'data');
+    renderIncome();
+  } catch(e) { showState('income', 'error', e.message); }
+}
+
+function renderIncome() {
+  const start = (incomePage - 1) * rowsPerPage;
+  const slice = filteredIncome.slice(start, start + rowsPerPage);
+  document.getElementById('incomeTableBody').innerHTML = slice.length
+    ? slice.map(r => `<tr>
+        <td>${r.cust_name || '—'}</td>
+        <td class="mono-cell">${r.doc_number || '—'}</td>
+        <td class="mono-cell num">${r.doc_date || '—'}</td>
+        <td style="font-size:12px;">${r.doc_type || '—'}</td>
+        <td class="amt">${fmt(r.taxable_amt)}</td>
+        <td class="amt">${fmt(r.tax_amt)}</td>
+        <td class="amt">${fmt(r.gross_amt)}</td>
+        <td style="font-size:12px;">${r.entry_source || '—'}</td>
+        <td class="mono-cell" style="font-size:11px;">${r.upload_ref || '—'}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="9"><div class="empty-state"><i class="bi bi-search"></i><p>No income records found</p></div></td></tr>`;
+  updatePagination(filteredIncome.length,'incFrom','incTo','incTotal','incPagBtns',incomePage,p=>{incomePage=p;renderIncome();});
+}
+
+function filterIncome(q) {
+  const src = document.getElementById('incomeSourceFilter').value;
+  filteredIncome = allIncome.filter(r => {
+    const matchQ = !q  || [r.cust_name,r.doc_number,r.doc_type]
+                          .some(v=>(v||'').toLowerCase().includes(q.toLowerCase()));
+                          
+    // Clean up spaces and case mismatches from the database source string on the fly
+    const cleanDbSource = (r.entry_source || '').trim().toLowerCase();
+    const matchS = !src || cleanDbSource === src.trim().toLowerCase();
+    
+    return matchQ && matchS;
+  });
+  incomePage = 1;
+  renderIncome();
+}
+
+
+// ════════════════════════════════════════════════════════
+//  UNREFERENCED ENTRIES TAB
+// ════════════════════════════════════════════════════════
+async function loadUnreferenced() {
+  showState('unref', 'loading');
+  try {
+    const resp   = await apiFetch(API.unreferenced(currentFY));
+    allUnref     = resp.data ?? resp;
+    filteredUnref = [...allUnref];
+    unrefPage    = 1;
+    document.getElementById('tabCountUnref').textContent = allUnref.length;
+    showState('unref', 'data');
+    renderUnref();
+  } catch(e) { showState('unref', 'error', e.message); }
+}
+
+function renderUnref() {
+  const start = (unrefPage - 1) * rowsPerPage;
+  const slice = filteredUnref.slice(start, start + rowsPerPage);
+  const reasonLabel = { no_pan:'No PAN Match', no_tan:'No TAN Match', no_customer:'No Customer Match', duplicate:'Possible Duplicate' };
+  document.getElementById('unrefTableBody').innerHTML = slice.length
+    ? slice.map(r => `<tr>
+        <td style="font-style:italic; color:black;">${r.raw_identifier || '—'}</td>
+        <td class="mono-cell">${r.doc_number || '—'}</td>
+        <td class="mono-cell num">${r.doc_date || '—'}</td>
+        <td class="amt">${fmt(r.entry_amt)}</td>
+        <td><span class="rec-badge unreferenced">${reasonLabel[r.unref_reason] || r.unref_reason || '—'}</span></td>
+        <td class="mono-cell" style="font-size:11px;">${r.upload_ref || '—'}</td>
+        <td style="font-size:12px; color:black;">${r.remarks || '—'}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="7"><div class="empty-state"><i class="bi bi-check-circle" style="color:var(--success);opacity:0.6;"></i><p>No unreferenced entries — all records matched</p></div></td></tr>`;
+  updatePagination(filteredUnref.length,'unrefFrom','unrefTo','unrefTotal','unrefPagBtns',unrefPage,p=>{unrefPage=p;renderUnref();});
+}
+
+function filterUnref(q) {
+  const reason = document.getElementById('unrefReasonFilter').value;
+  filteredUnref = allUnref.filter(r => {
+    const matchQ = !q || [r.raw_identifier,r.doc_number,r.remarks]
+                         .some(v=>(v||'').toLowerCase().includes(q.toLowerCase()));
+    const matchR = !reason || r.unref_reason === reason;
+    return matchQ && matchR;
+  });
+  unrefPage = 1;
+  renderUnref();
+}
+
+// ════════════════════════════════════════════════════════
+//  UPLOAD HISTORY
+// ════════════════════════════════════════════════════════
+async function loadUploads() {
+  try {
+    const resp = await apiFetch(API.uploads(currentFY));
+    const rows = resp.data ?? resp;
+    document.getElementById('tabCountUploads').textContent = rows.length;
+    const iconMap = { pdf:'bi-file-earmark-pdf', xlsx:'bi-file-earmark-excel', txt:'bi-file-earmark-text' };
+    const stMap   = { success:'active', processed:'active', error:'inactive', failed:'inactive', pending:'pending', processing:'pending' };
+    document.getElementById('uploadList').innerHTML = rows.length
+      ? rows.map(u => `
+          <div class="upload-item">
+            <div class="upload-icon-wrap ${u.file_ext}"><i class="bi ${iconMap[u.file_ext]||'bi-file-earmark'}"></i></div>
+            <div class="upload-meta">
+              <div class="upload-filename">${u.orig_filename}</div>
+              <div class="upload-details">${u.uploaded_at} · ${u.file_size_kb} KB · ${u.uploaded_by_name||'—'}</div>
+            </div>
+            <div class="upload-status">
+              <span class="status-badge ${stMap[u.parse_status]||'inactive'}">${u.parse_status}</span>
+            </div>
+          </div>`).join('')
+      : `<div class="empty-state"><i class="bi bi-cloud-upload"></i><p>No uploads for FY ${currentFY}</p></div>`;
+  } catch(e) { console.warn('Upload history load failed:', e.message); }
+}
+
+// ════════════════════════════════════════════════════════
+//  SHARED HELPERS
+// ════════════════════════════════════════════════════════
+function showState(type, state, msg) {
+  const loadEl  = document.getElementById(`${type}Loading`);
+  const errEl   = document.getElementById(`${type}Error`);
+  const wrapEl  = document.getElementById(`${type}TableWrap`);
+  const pagEl   = document.getElementById(`${type}PaginationRow`);
+  if (loadEl) loadEl.style.display  = state === 'loading' ? 'block' : 'none';
+  if (errEl)  errEl.style.display   = state === 'error'   ? 'block' : 'none';
+  if (wrapEl) wrapEl.style.display  = state === 'data'    ? 'block' : 'none';
+  if (pagEl)  pagEl.style.display   = state === 'data'    ? 'flex'  : 'none';
+  if (msg && document.getElementById(`${type}ErrorMsg`))
+    document.getElementById(`${type}ErrorMsg`).textContent = msg;
+}
+
+function updatePagination(total, fromId, toId, totalId, btnsId, currPg, setPageFn) {
+  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+  const start = total === 0 ? 0 : (currPg - 1) * rowsPerPage + 1;
+  const end   = Math.min(currPg * rowsPerPage, total);
+  document.getElementById(fromId).textContent  = start;
+  document.getElementById(toId).textContent    = end;
+  document.getElementById(totalId).textContent = total;
+  const btns = document.getElementById(btnsId);
+  btns.innerHTML = '';
+  for (let p = 1; p <= Math.min(totalPages, 7); p++) {
+    const btn = document.createElement('div');
+    btn.className   = 'page-btn' + (p === currPg ? ' current' : '');
+    btn.textContent = p;
+    btn.onclick     = () => setPageFn(p);
+    btns.appendChild(btn);
+  }
+}
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-' + tabId).classList.add('active');
+}
+</script>
+</body>
+</html>
+
+

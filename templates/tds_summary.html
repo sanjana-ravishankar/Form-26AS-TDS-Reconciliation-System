@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form 26AS – TDS Summary</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root{--navy:#0f1e3d;--navy-light:#1e3668;--accent:#2563eb;--accent-soft:#dbeafe;--accent-text:#1d4ed8;--border:#e2e8f0;--surface:#f8fafc;--text-main:#0f172a;--text-muted:#c3cbd7;--text-hint:#94a3b8;--success:#16a34a;--success-bg:#dcfce7;--warning:#b45309;--warning-bg:#fef3c7;--danger:#dc2626;--danger-bg:#fee2e2;--mono:'IBM Plex Mono',monospace;--sans:'DM Sans',sans-serif;--sidebar-w:220px}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:var(--sans);font-size:14px;color:var(--text-main);background:var(--surface)}
+  .sidebar{width:var(--sidebar-w);background:var(--navy);height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+  .sidebar-brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .sidebar-brand .brand-tag{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.15em;color:rgba(247,235,235,.962);text-transform:uppercase;margin-bottom:4px}
+  .sidebar-brand .brand-name{font-size:14px;font-weight:600;color:#fff;line-height:1.7}
+  .sidebar-brand .brand-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+  .nav-section-label{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.12em;color:rgba(255,255,255,.99);text-transform:uppercase;padding:16px 18px 6px}
+  .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:rgba(255,255,255,.58);text-decoration:none;transition:background .15s,color .15s;border-left:3px solid transparent}
+  .sidebar-nav a i{font-size:15px;flex-shrink:0}
+  .sidebar-nav a:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.85)}
+  .sidebar-nav a.active{background:rgba(37,99,235,.18);color:#93c5fd;border-left-color:#3b82f6;font-weight:500}
+  .sidebar-footer{margin-top:auto;border-top:1px solid rgba(255,255,255,.07);padding:14px 18px}
+  .user-pill{display:flex;align-items:center;gap:10px}
+  .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--navy-light);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;color:#93c5fd;flex-shrink:0}
+  .user-name{font-size:12px;color:rgba(255,255,255,.7);font-weight:500}
+  .user-role{font-size:10px;color:rgba(255,255,255,.35)}
+  .main-wrap{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+  .topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+  .breadcrumb-wrap{display:flex;align-items:center;gap:6px}
+  .breadcrumb-wrap span{font-size:12px;color:rgb(230, 10, 10);font-weight:500}
+  .breadcrumb-wrap .bc-sep{color:var(--text-hint)}
+  .breadcrumb-wrap .bc-current{font-weight:500;color:var(--text-main)}
+  .btn-topbar{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text-main);transition:background .14s}
+  .btn-topbar:hover{background:var(--surface)}
+  .page-content{padding:24px 28px 40px;flex:1}
+  .page-title{font-size:18px;font-weight:600}
+  .page-subtitle{font-size:12px;color:black;margin-top:2px;margin-bottom:20px}
+  .filter-bar{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .filter-group{display:flex;align-items:center;gap:8px}
+  .filter-group label{font-size:12px;color:black;font-weight:500;white-space:nowrap}
+  .filter-select{padding:7px 12px;border:1px solid var(--border);border-radius:7px;font-size:13px;background:#fff;color:var(--text-main);font-family:var(--sans);cursor:pointer;outline:none;min-width:150px}
+  .filter-select:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+  .filter-divider{width:1px;height:24px;background:var(--border)}
+  .btn-apply{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:var(--accent);color:#fff;transition:background .14s}
+  .btn-apply:hover{background:#1d4ed8}
+  .btn-reset{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:#fff;color:black;transition:background .14s}
+  .btn-reset:hover{background:var(--surface);color:var(--text-main)}
+  /* Metric row */
+  .metric-row{display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .metric-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;position:relative;flex:1;min-width:140px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+  .metric-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:1.4rem;-webkit-text-stroke:.75px currentColor}
+  .metric-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .metric-value{font-family:var(--mono);font-size:18px;font-weight:700;color:#111827;line-height:1;margin-bottom:2px}
+  .metric-sub{font-size:10px;color:#6b7280}
+  .m-blue::before{background:#3b82f6}.m-blue .metric-label,.m-blue .metric-icon{color:#3b82f6}
+  .m-green::before{background:#22c55e}.m-green .metric-label,.m-green .metric-icon{color:#22c55e}
+  .m-danger::before{background:#ef4444}.m-danger .metric-label,.m-danger .metric-icon{color:#ef4444}
+  .m-amber::before{background:#f59e0b}.m-amber .metric-label,.m-amber .metric-icon{color:#f59e0b}
+  /* Table */
+  .card-panel{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .search-row{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+  .search-wrap{position:relative;flex:1}
+  .search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-hint);font-size:14px}
+  .search-input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:7px;font-size:13px;background:#fff;color:var(--text-main);outline:none;font-family:var(--sans)}
+  .search-input:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+  .data-table{width:100%;border-collapse:collapse;font-size:13px}
+  .data-table thead th{background:var(--surface);border-bottom:1px solid var(--border);border-top:1px solid var(--border);padding:9px 14px;font-size:11px;font-weight:600;color:black;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;cursor:pointer;user-select:none}
+  .data-table thead th.num{text-align:right}
+  .data-table thead th:hover{color:#333}
+  .data-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+  .data-table tbody tr:last-child{border-bottom:none}
+  .data-table tbody tr:hover{background:#f8fafc}
+  .data-table td{padding:10px 14px;color:black;vertical-align:middle}
+  .data-table td.mono{font-family:var(--mono);font-size:11px}
+  .data-table td.amt{text-align:right;font-family:var(--mono);font-size:12px;font-weight:500}
+  .data-table td.variance.pos{color:var(--success);text-align:right;font-family:var(--mono);font-size:12px;font-weight:500}
+  .data-table td.variance.neg{color:var(--danger);text-align:right;font-family:var(--mono);font-size:12px;font-weight:500}
+  .data-table td.variance.zero{color:var(--text-hint);text-align:right;font-family:var(--mono);font-size:12px}
+  .data-table tfoot td{background:var(--surface);border-top:2px solid var(--border);padding:9px 14px;font-weight:700;font-size:12px;font-family:var(--mono)}
+  .data-table tfoot td.lbl{font-family:var(--sans);font-weight:700;font-size:12px}
+  .section-badge{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--accent-soft);color:var(--accent-text);padding:2px 7px;border-radius:4px}
+  .pagination-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--surface)}
+  .page-info{font-size:12px;color:rgb(46,43,43)}
+  .page-info span{font-family:var(--mono)}
+  .page-btns{display:flex;gap:4px}
+  .page-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:5px;background:#fff;font-size:12px;cursor:pointer;color:black}
+  .page-btn:hover{background:var(--surface);color:var(--text-main)}
+  .page-btn.current{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--text-hint)}
+  .empty-state i{font-size:28px;margin-bottom:8px;display:block;opacity:.4}
+  .empty-state p{font-size:13px}
+  .loading-state{padding:32px;text-align:center;color:var(--text-hint);font-size:13px}
+  .loading-state i{font-size:22px;display:block;margin-bottom:8px;opacity:.5}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-tag">Form 26AS Utility</div>
+        <div class="brand-name">Reconciliation</div>
+        <div class="brand-sub">v1.0 · Internal</div>
+    </div>
+    
+    <div class="nav-section-label">Masters</div>
+    <div class="sidebar-nav">
+        <!-- Points to the root index path -->
+        <a href="/"><i class="bi bi-people"></i> Customer Master</a>
+        <!-- Points to /form26as route -->
+        <a href="/form26as"><i class="bi bi-file-earmark-text"></i> Form 26AS</a>
+    </div>
+    
+    <div class="nav-section-label">Operations</div>
+    <div class="sidebar-nav">
+        <!-- Points to /books-of-accounts route -->
+        <a href="/books-of-accounts"><i class="bi bi-journals"></i> Books of Accounts</a>
+        <!-- Points to /upload-utility route -->
+        <a href="/upload-utility"><i class="bi bi-upload"></i> Upload Utility</a>
+        <!-- Points to /reconciliation route -->
+        <a href="/reconciliation"><i class="bi bi-arrow-left-right"></i> Reconciliation</a>
+    </div>
+    
+    <div class="nav-section-label">Reports</div>
+    <div class="sidebar-nav">
+        <a href="/tds-summary" class="active"><i class="bi bi-file-earmark-bar-graph"></i> TDS Summary</a>
+        <a href="/audit-trail"><i class="bi bi-clipboard-data"></i> Audit Trail</a>
+    </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar">SR</div>
+      <div>
+        <div class="user-name">Sanjana Ravishankar</div>
+        <div class="user-role">Tax Analyst</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="breadcrumb-wrap">
+      <span>Reports</span>
+      <span class="bc-sep"><i class="bi bi-chevron-right" style="font-size:10px"></i></span>
+      <span class="bc-current">TDS Summary</span>
+    </div>
+    <button class="btn-topbar" onclick="exportReport()"><i class="bi bi-file-earmark-excel"></i> Export Summary Report</button>
+  </div>
+
+  <div class="page-content">
+    <div class="page-title">TDS Summary</div>
+    <div class="page-subtitle">Consolidated view of TDS deductible vs Form 26AS credits per customer and section.</div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Financial Year</label>
+        <select class="filter-select" id="filterFY">
+          <option value="">— Select FY —</option>
+          <option value="2025-26">FY 2025–26</option>
+          <option value="2024-25">FY 2024–25</option>
+          <option value="2023-24">FY 2023–24</option>
+          <option value="2022-23">FY 2022–23</option>
+          <option value="2021-22">FY 2021–22</option>
+          <option value="2020-21">FY 2020–21</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <label>Customer</label>
+        <select class="filter-select" id="filterCust">
+          <option value="">All Customers</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Section</label>
+        <select class="filter-select" id="filterSection">
+          <option value="">All Sections</option>
+          <option>192</option><option>194C</option><option>194I</option><option>194J</option>
+          <option>194H</option><option>194A</option><option>194B</option>
+        </select>
+      </div>
+      <button class="btn-apply" onclick="loadReport()"><i class="bi bi-check2"></i> Apply</button>
+      <button class="btn-reset" onclick="resetFilters()"><i class="bi bi-x"></i> Reset</button>
+   
+</div>
+
+  
+    <!-- Metric Cards -->
+    <div class="metric-row">
+      <div class="metric-card m-blue">
+        <div class="metric-label">Total Taxable Amount</div>
+        <div class="metric-value" id="mTaxable">—</div>
+        <div class="metric-sub">aggregate across all sections</div>
+        <i class="bi bi-currency-rupee metric-icon"></i>
+      </div>
+      <div class="metric-card m-amber">
+        <div class="metric-label">TDS Deductible</div>
+        <div class="metric-value" id="mDeductible">—</div>
+        <div class="metric-sub">as per books</div>
+        <i class="bi bi-journals metric-icon"></i>
+      </div>
+      <div class="metric-card m-green">
+        <div class="metric-label">Form 26AS Credit</div>
+        <div class="metric-value" id="mF26as">—</div>
+        <div class="metric-sub">as per uploaded 26AS</div>
+        <i class="bi bi-file-earmark-check metric-icon"></i>
+      </div>
+      <div class="metric-card m-danger">
+        <div class="metric-label">Net Variance</div>
+        <div class="metric-value" id="mVariance">—</div>
+        <div class="metric-sub">deductible minus credit</div>
+        <i class="bi bi-plus-slash-minus metric-icon"></i>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card-panel">
+      <div class="search-row">
+        <div class="search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search by customer name, PAN, TAN, section…" oninput="filterTable(this.value)">
+        </div>
+        <select class="filter-select" id="varianceFilter" onchange="filterTable('')">
+          <option value="">All</option>
+          <option value="match">Fully Matched</option>
+          <option value="under">Under-credited</option>
+          <option value="over">Over-credited</option>
+        </select>
+      </div>
+
+      <div class="loading-state" id="tblLoading">
+        <i class="bi bi-arrow-repeat"></i> Select a financial year and click Apply.
+      </div>
+      <div id="tblError" style="display:none;padding:16px">
+        <div style="background:var(--danger-bg);color:var(--danger);font-size:12px;padding:10px 14px;border-radius:7px;display:flex;align-items:center;gap:8px">
+          <i class="bi bi-exclamation-circle"></i><span id="tblErrorMsg"></span>
+        </div>
+      </div>
+      <div style="overflow-x:auto;display:none" id="tblWrap">
+        <table class="data-table">
+          <thead><tr>
+            <th onclick="sortBy('cust_name')">Customer <i class="bi bi-chevron-expand" style="font-size:9px;opacity:.4"></i></th>
+            <th>PAN</th><th>TAN</th>
+            <th onclick="sortBy('tds_section')">Section <i class="bi bi-chevron-expand" style="font-size:9px;opacity:.4"></i></th>
+            <th class="num" onclick="sortBy('total_taxable_amt')">Taxable Amt</th>
+            <th class="num" onclick="sortBy('total_tds_deductible')">TDS Deductible</th>
+            <th class="num" onclick="sortBy('total_f26as_credit')">26AS Credit</th>
+            <th class="num" onclick="sortBy('variance_amt')">Variance</th>
+            <th class="num">Invoices</th>
+            </tr></thead>
+          <tbody id="tblBody"></tbody>
+          <tfoot id="tblFoot"></tfoot>
+        </table>
+      </div>
+      <div class="pagination-row" id="tblPagRow" style="display:none">
+        <div class="page-info">Showing <span id="tblFrom">0</span>–<span id="tblTo">0</span> of <span id="tblTotal">0</span> rows</div>
+        <div class="page-btns" id="tblPagBtns"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const API = {
+  summary: (fy) => `/api/tds-summary?fin_year=${fy}`
+};
+const rowsPerPage=10;
+let allRows=[],filteredRows=[],currPage=1;
+const fmt=v=>{if(v===null||v===undefined)return'—';const n=parseFloat(v);return isNaN(n)?'—':'₹\u00a0'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})};
+
+async function apiFetch(url){const r=await fetch(url,{headers:{'X-Requested-With':'XMLHttpRequest'}});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||r.statusText)}return r.json()}
+
+async function init(){
+  try{
+    const resp=await apiFetch('/api/customers?limit=500');
+    const sel=document.getElementById('filterCust');
+    (resp.data??[]).forEach(c=>{const o=document.createElement('option');o.value=c.cust_id;o.textContent=c.cust_name;sel.appendChild(o)});
+  }catch(e){}
+}
+
+async function loadReport(){
+  const fy=document.getElementById('filterFY').value;
+  if(!fy){alert('Please select a Financial Year.');return}
+  const cust=document.getElementById('filterCust').value;
+  const sec=document.getElementById('filterSection').value;
+  let url=`/api/tds-summary?fin_year=${fy}&limit=1000`;
+  if(cust)url+=`&cust_id=${cust}`;
+  if(sec)url+=`&section=${sec}`;
+  document.getElementById('tblLoading').style.display='block';
+  document.getElementById('tblError').style.display='none';
+  document.getElementById('tblWrap').style.display='none';
+  document.getElementById('tblPagRow').style.display='none';
+    try {
+    const resp = await apiFetch(url);
+    
+    // Grab the database rows response array safely
+    const rawRowsArray = resp.data ?? [];
+    
+    // 1. READ THE ACTIVE SELECTOR VALUES TO FILTER LOCALLY
+    const selectedCustText = document.getElementById('filterCust')?.value || '';
+    const selectedSectText = document.getElementById('filterSection')?.value || '';
+
+    // 2. DYNAMIC CLIENT-SIDE FILTRATION ENGINE (Bypasses all exact-match issues)
+    filteredRows = rawRowsArray.filter(r => {
+      // If customer dropdown is blank or matches 'all' text elements -> match is true
+      const matchC = !selectedCustText || selectedCustText.toLowerCase() === 'all' || 
+                     String(r.cust_id) === selectedCustText || 
+                     (r.cust_name || '').toLowerCase().includes(selectedCustText.toLowerCase());
+
+      // If tax section dropdown is blank or matches 'all' text elements -> match is true
+      const matchS = !selectedSectText || selectedSectText.toLowerCase() === 'all' || 
+                     (r.tds_section || '').toLowerCase() === selectedSectText.toLowerCase();
+
+      return matchC && matchS;
+    });
+
+    allRows = [...filteredRows]; // Synchronize baseline arrays
+    currPage = 1; // Reset pagination counters back to page 1
+    
+    updateWidgets();
+    document.getElementById('tblLoading').style.display = 'none';
+    document.getElementById('tblWrap').style.display = 'block';
+    document.getElementById('tblPagRow').style.display = 'flex';
+    
+    // Call your single-footer, final page table display loop printer
+    renderTable();
+
+  } catch(e) {
+    document.getElementById('tblLoading').style.display = 'none';
+    document.getElementById('tblError').style.display = 'block';
+    document.getElementById('tblErrorMsg').textContent = e.message;
+  }
+
+}
+
+
+function exportReport() {
+  // Matches the global arrays assigned in your loadReport() function
+  if (!filteredRows || filteredRows.length === 0) { 
+    alert('No data available to export. Please load the summary rows first.'); 
+    return; 
+  }
+  
+  // Setup standard accounting column headers
+  const headers = ['Customer Name', 'PAN Number', 'TAN Number', 'TDS Section', 'Total Taxable Amt', 'System TDS Deductible', 'Form 26AS Credit', 'Variance Amt'];
+  
+  // Map through active rows array (with cell formatting stripped out for raw arithmetic)
+  const rows = filteredRows.map(r => [
+    `"${(r.cust_name || '—').replace(/"/g, '""')}"`, // Safely wraps and escapes corporate commas
+    r.pan_number || '—',
+    r.tan_number || '—',
+    r.tds_section || '—',
+    parseFloat(r.total_taxable_amt || 0),
+    parseFloat(r.total_tds_deductible || 0),
+    parseFloat(r.total_f26as_credit || 0),
+    parseFloat(r.variance_amt || 0)
+  ]);
+  
+  // Join tokens with structural string markers
+  const csvContent = [headers, ...rows].map(rowArray => rowArray.join(',')).join('\n');
+  
+  // Wrap with a localized Byte Order Mark (\uFEFF) to protect Excel currency strings
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const downloadUrl = URL.createObjectURL(blob);
+  
+  // Fire anchor click timeline dispatch
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  
+  // Dynamically names the file using the selected Financial Year value from your HTML select element
+  const activeFY = document.getElementById('filterFY')?.value || 'Report';
+  a.download = `tds_summary_${activeFY}_${new Date().toISOString().slice(0,10)}.csv`;
+  
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  
+  URL.revokeObjectURL(downloadUrl);
+}
+
+
+
+
+function updateWidgets(){
+  const taxable=allRows.reduce((s,r)=>s+(parseFloat(r.total_taxable_amt)||0),0);
+  const deductible=allRows.reduce((s,r)=>s+(parseFloat(r.total_tds_deductible)||0),0);
+  const f26as=allRows.reduce((s,r)=>s+(parseFloat(r.total_f26as_credit)||0),0);
+  const variance=deductible-f26as;
+  document.getElementById('mTaxable').textContent=fmt(taxable);
+  document.getElementById('mDeductible').textContent=fmt(deductible);
+  document.getElementById('mF26as').textContent=fmt(f26as);
+  document.getElementById('mVariance').textContent=fmt(variance);
+}
+
+
+function renderTable(){
+  const start=(currPage-1)*rowsPerPage;
+  const slice=filteredRows.slice(start,start+rowsPerPage);
+  const tbody=document.getElementById('tblBody');
+  if(!slice.length){
+    tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="bi bi-search"></i><p>No records found</p></div></td></tr>`;
+    document.getElementById('tblFoot').innerHTML='';
+    updatePag(0);return;
+  }
+  tbody.innerHTML=slice.map(r=>{
+    const v=parseFloat(r.variance_amt||0);
+    const vCls=Math.abs(v)<0.01?'zero':v>0?'neg':'pos';  // neg variance = deductible > credit (bad)
+    return`<tr>
+      <td style="font-weight:500">${r.cust_name}</td>
+      <td class="mono">${r.pan_number||'—'}</td>
+      <td class="mono">${r.tan_number||'—'}</td>
+      <td><span class="section-badge">${r.tds_section||'—'}</span></td>
+      <td class="amt">${fmt(r.total_taxable_amt)}</td>
+      <td class="amt">${fmt(r.total_tds_deductible)}</td>
+      <td class="amt">${fmt(r.total_f26as_credit)}</td>
+      <td class="variance ${vCls}">${fmt(r.variance_amt)}</td>
+      <td class="amt">${r.invoice_count??'—'}</td>
+    </tr>`;
+  }).join('');
+
+  // ══════════════════
+  //  FOOTER TOTALS 
+  // ══════════════════
+  const cols = ['total_taxable_amt', 'total_tds_deductible', 'total_f26as_credit', 'variance_amt'];
+  const tots = cols.map(c => filteredRows.reduce((s, r) => s + (parseFloat(r[c]) || 0), 0));
+  
+  // Calculate total pages dynamically based on your project configuration
+  const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+  if (currPage === totalPages || totalPages === 0) {
+    // Render the footer row totals only if the user reaches the last page
+    document.getElementById('tblFoot').innerHTML = `<tr>
+      <td class="lbl" colspan="4" style="font-weight:700; background-color: var(--card-bg);">Total (${filteredRows.length} rows)</td>
+      ${tots.map(t => `<td style="text-align:right; font-family:var(--mono); font-size:12px; font-weight:700; background-color: var(--card-bg);">${fmt(t)}</td>`).join('')}
+      <td style="background-color: var(--card-bg);"></td>
+    </tr>`;
+  } else {
+    // Clear the footer completely from intermediate page views
+    document.getElementById('tblFoot').innerHTML = '';
+  }
+
+  updatePag(filteredRows.length);
+}
+
+
+
+function updatePag(total){
+  const tpg=Math.max(1,Math.ceil(total/rowsPerPage));
+  const s=total?((currPage-1)*rowsPerPage+1):0;
+  document.getElementById('tblFrom').textContent=s;
+  document.getElementById('tblTo').textContent=Math.min(currPage*rowsPerPage,total);
+  document.getElementById('tblTotal').textContent=total;
+  const btns=document.getElementById('tblPagBtns');btns.innerHTML='';
+  for(let p=1;p<=Math.min(tpg,7);p++){const b=document.createElement('div');b.className='page-btn'+(p===currPage?' current':'');b.textContent=p;b.onclick=()=>{currPage=p;renderTable()};btns.appendChild(b)}
+}
+
+function filterTable(q){
+  const search=q||document.getElementById('searchInput').value;
+  const vf=document.getElementById('varianceFilter').value;
+  filteredRows=allRows.filter(r=>{
+    const matchQ=!search||[r.cust_name,r.pan_number,r.tan_number,r.tds_section].some(v=>(v||'').toLowerCase().includes(search.toLowerCase()));
+    let matchV=true;
+    const v=parseFloat(r.variance_amt||0);
+    if(vf==='match')matchV=Math.abs(v)<0.01;
+    if(vf==='under')matchV=v>0.01;
+    if(vf==='over')matchV=v<-0.01;
+    return matchQ&&matchV;
+  });
+  currPage=1;renderTable();
+}
+
+let sortDir={};
+function sortBy(field){
+  sortDir[field]=sortDir[field]==='asc'?'desc':'asc';
+  filteredRows.sort((a,b)=>{
+    const va=parseFloat(a[field])||a[field]||'';
+    const vb=parseFloat(b[field])||b[field]||'';
+    if(typeof va==='number')return sortDir[field]==='asc'?va-vb:vb-va;
+    return sortDir[field]==='asc'?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+  });
+  currPage=1;renderTable();
+}
+
+function resetFilters(){
+  ['filterFY','filterCust','filterSection','varianceFilter'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('searchInput').value='';
+  allRows=[];filteredRows=[];
+  document.getElementById('tblLoading').style.display='block';
+  document.getElementById('tblWrap').style.display='none';
+  document.getElementById('tblPagRow').style.display='none';
+  ['mTaxable','mDeductible','mF26as','mVariance'].forEach(id=>document.getElementById(id).textContent='—');
+}
+
+init();
+</script>
+</body>
+</html>
