@@ -6,7 +6,7 @@ The web application runs on the web and displays a dashboard consisting of 7 scr
 To run the application:
 Make sure you are connnected to MySQL database with your correct credentials.
 Run:
-app.py [in the CLI (terminal)].
+python app.py 
 
 
 
