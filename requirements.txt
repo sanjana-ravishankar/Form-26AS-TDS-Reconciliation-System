@@ -1,0 +1,27 @@
+# ================================================================
+# Form 26AS TDS Reconciliation System — Requirements
+# Sundaram Finance Limited | Data Platfrom
+# ================================================================
+# Install all: pip install -r requirements.txt
+#
+# BigQuery sync scripts (bq_incremental_sync.py, airflow_dag.py,
+# create_bq_tables.py, dataflow_mysql_to_bq.py) must be run
+# inside beam_env which has apache-beam and GCP libraries installed.
+# ================================================================
+
+# ── Flask App (app.py) ──────────────────────────────────────────
+flask==3.0.3
+flask-cors==4.0.1
+mysql-connector-python==8.4.0
+python-dotenv==1.0.1
+openpyxl==3.1.5
+pypdf==4.3.1
+
+# ── BigQuery Sync (beam_env) ────────────────────────────────────
+google-cloud-bigquery==3.25.0
+google-auth==2.32.0
+
+# ── Apache Beam / Dataflow ──────────────────────────────────────
+apache-beam[gcp]==2.57.0
+
+
